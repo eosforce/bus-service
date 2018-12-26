@@ -22,6 +22,8 @@ var global_vault_file string="/home/xuyapeng/go_workspace/src/github.com/eosforc
 
 var vault_password string
 
+var dest_url string
+
 func SetVaultPasswd(passwd string) {
 	vault_password = passwd
 }
@@ -30,10 +32,13 @@ func SetVaultFile (file string) {
 	global_vault_file = file
 }
 
+func SetDestUrl (url string) {
+	dest_url = url
+}
+
 func GetAPI() *eos.API {
 	httpHeaders := viper.GetStringSlice("global-http-header")
-	//viper.GetString("global-api-url")
-	api := eos.New("http://127.0.0.1:8888")
+	api := eos.New(dest_url)
 	for _, header := range httpHeaders {
 		headerArray := strings.SplitN(header, ": ", 2)
 		if len(headerArray) != 2 || strings.Contains(headerArray[0], " ") {

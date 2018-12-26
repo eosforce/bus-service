@@ -7,13 +7,13 @@ import (
     "google.golang.org/grpc"
   //  pb "github.com/eosforce/forcegrpc/force_transfer"
     "google.golang.org/grpc/reflection"
-//	"fmt"
+	//"fmt"
 
-	 "github.com/eosforce/forcegrpc/force-grpc-server/basic"
+	 "github.com/eosforce/bus-service/force-grpc-server/basic"
 	// pb_trx "github.com/eosforce/forcegrpc/force_transaction"
 	pb_block "github.com/eosforce/forcegrpc/force_block"
 	 "flag"
-	 "github.com/eosforce/forcegrpc/force-grpc-server/common"
+	 "github.com/eosforce/bus-service/force-grpc-server/common"
 	 "strconv"
 )
 
@@ -23,6 +23,9 @@ const (
 
 var vault_password = flag.String("vault_password", "123xyp", "the vault password")
 var vault_file = flag.String("vault_file", "./eosc-vault.json", "the vault password")
+var tcp_port = flag.Int("tcp_port",50051,"the port tcp listen")
+var tcp_ip = flag.String("tcp_ip","127.0.0.1","the ip tcp listen")
+var url = flag.String("url","http://127.0.0.1:8888","the addr which action send to")
 
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
@@ -35,14 +38,17 @@ func (s *server) RpcSendaction(ctx context.Context, in *pb_block.BlockRequest) (
 }
 
 func main() {
-    lis, err := net.Listen("tcp", port)
+    flag.Parse()
+
+    lis,err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(*tcp_ip), *tcp_port, ""})
+   // lis, err := net.Listen("tcp", port)
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
 	}
-	flag.Parse()
 	
 	common.SetVaultPasswd(*vault_password)
-	common.SetVaultFile(*vault_file)
+    common.SetVaultFile(*vault_file)
+    common.SetDestUrl(*url)
 	
     s := grpc.NewServer()
     pb_block.RegisterGrpcBlockServer(s, &server{})

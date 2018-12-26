@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bronze1man/go-yaml2json"
-	"github.com/eosforce/forcegrpc/force-grpc-server/common"
+	"github.com/eosforce/bus-service/force-grpc-server/common"
 	"io/ioutil"
 	"os"
 	"strings"
