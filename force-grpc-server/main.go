@@ -26,7 +26,7 @@ var vault_file = flag.String("vault_file", "./eosc-vault.json", "the vault passw
 var tcp_port = flag.Int("tcp_port",50051,"the port tcp listen")
 var tcp_ip = flag.String("tcp_ip","127.0.0.1","the ip tcp listen")
 var url = flag.String("url","http://127.0.0.1:8888","the addr which action send to")
-
+var abipath = flag.String("abipath","./force.token.abi","the path of the abi file")
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
 
@@ -49,6 +49,8 @@ func main() {
 	common.SetVaultPasswd(*vault_password)
     common.SetVaultFile(*vault_file)
     common.SetDestUrl(*url)
+
+    basic.SetAbiFilePath(*abipath)
 	
     s := grpc.NewServer()
     pb_block.RegisterGrpcBlockServer(s, &server{})
