@@ -11,10 +11,10 @@ import (
 
 	 "github.com/eosforce/bus-service/force-grpc-server/basic"
 	// pb_trx "github.com/eosforce/forcegrpc/force_transaction"
-	pb_block "github.com/eosforce/forcegrpc/force_block"
+	force_relay_commit "github.com/eosforce/bus-service/force_relay_commit"
 	 "flag"
 	 "github.com/eosforce/bus-service/force-grpc-server/common"
-	 "strconv"
+	// "strconv"
 )
 
 const (
@@ -31,10 +31,10 @@ var abipath = flag.String("abipath","./force.token.abi","the path of the abi fil
 type server struct{}
 
 
-func (s *server) RpcSendaction(ctx context.Context, in *pb_block.BlockRequest) (*pb_block.BlockReply, error) {
+func (s *server) RpcSendaction(ctx context.Context, in *force_relay_commit.RelayCommitRequest) (*force_relay_commit.RelayCommitReply, error) {
 	//接下来解析transaction中的内容	
-	basic.Handblock(in.Blocknum,in.Trans)
-    return &pb_block.BlockReply{Reply:"get Block",Message: "BlockNum:"+strconv.Itoa(int(in.Blocknum))}, nil
+	basic.HandRelayBlock(in.Block,in.Action)
+    return &force_relay_commit.RelayCommitReply{Reply:"get Block"}, nil
 }
 
 func main() {
@@ -53,7 +53,7 @@ func main() {
     basic.SetAbiFilePath(*abipath)
 	
     s := grpc.NewServer()
-    pb_block.RegisterGrpcBlockServer(s, &server{})
+    force_relay_commit.RegisterRelayCommitServer(s, &server{})
     // Register reflection service on gRPC server.
     reflection.Register(s)
     if err := s.Serve(lis); err != nil {
