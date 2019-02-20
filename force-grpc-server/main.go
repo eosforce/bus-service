@@ -5,31 +5,31 @@ import (
     "net"
     "golang.org/x/net/context"
     "google.golang.org/grpc"
-  //  pb "github.com/eosforce/forcegrpc/force_transfer"
     "google.golang.org/grpc/reflection"
 	//"fmt"
 
 	 "github.com/eosforce/bus-service/force-grpc-server/basic"
-	// pb_trx "github.com/eosforce/forcegrpc/force_transaction"
 	force_relay_commit "github.com/eosforce/bus-service/force_relay_commit"
 	 "flag"
-	 "github.com/eosforce/bus-service/force-grpc-server/common"
-	// "strconv"
+     "github.com/eosforce/goeosforce/ecc"
 )
 
 const (
     port = ":50051"
 )
 
-var vault_password = flag.String("vault_password", "123xyp", "the vault password")
-var vault_file = flag.String("vault_file", "./eosc-vault.json", "the vault password")
 var tcp_port = flag.Int("tcp_port",50051,"the port tcp listen")
 var tcp_ip = flag.String("tcp_ip","127.0.0.1","the ip tcp listen")
-var url = flag.String("url","http://127.0.0.1:8888","the addr which action send to")
-var abipath = flag.String("abipath","./force.token.abi","the path of the abi file")
+var configPath = flag.String("cfg", "./config.json", "confg file path")
+var chain = flag.String("chain name","eosforce","the name of chain")
+var transfer = flag.String("transfer name","eosforce","the name of transfer")
+
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
 
+func init() {
+	ecc.PublicKeyPrefixCompat = "FOSC"
+}
 
 func (s *server) RpcSendaction(ctx context.Context, in *force_relay_commit.RelayCommitRequest) (*force_relay_commit.RelayCommitReply, error) {
 	//接下来解析transaction中的内容	
@@ -41,16 +41,13 @@ func main() {
     flag.Parse()
 
     lis,err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(*tcp_ip), *tcp_port, ""})
-   // lis, err := net.Listen("tcp", port)
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
 	}
 	
-	common.SetVaultPasswd(*vault_password)
-    common.SetVaultFile(*vault_file)
-    common.SetDestUrl(*url)
-
-    basic.SetAbiFilePath(*abipath)
+    basic.Createclient(*configPath)
+    basic.SetChain(*chain)
+    basic.SetTransfer(*transfer)
 	
     s := grpc.NewServer()
     force_relay_commit.RegisterRelayCommitServer(s, &server{})

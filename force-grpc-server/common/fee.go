@@ -10,7 +10,7 @@ func GetFeeByTrx(tx *eos.Transaction) (eos.Asset, error) {
 	api := GetAPI()
 
 	// if no set will err
-	tx.Fee = eos.NewEOSAsset(0)
+	//tx.Fee = eos.NewEOSAsset(0)
 
 	resp, err := api.GetFee(tx)
 	fmt.Printf("resp %v\n", resp)
