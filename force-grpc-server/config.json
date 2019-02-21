@@ -1,0 +1,10 @@
+{
+    "url":"http://127.0.0.1:8001",
+    "keys":[
+        {"name":"eosforce", "key":"5KRKkaFpJZpDu7L2ws2Hi2Cj1HPW3sHererzvqKmkMBHX7gzyqd"},
+        {"name":"biosbpa", "key":"5JGYiR3a3htc6FTDPGZsKpZih2duX3oNzCfaDnAK3mEviBPHYVZ"}
+    ],
+    "pri":[
+        "5KRKkaFpJZpDu7L2ws2Hi2Cj1HPW3sHererzvqKmkMBHX7gzyqd"
+    ]
+}
