@@ -1,20 +1,16 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 
+	"github.com/eosforce/bus-service/force-relay/basic"
+	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
+	"github.com/eosforce/goeosforce/ecc"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-
-	//"fmt"
-
-	"flag"
-
-	"github.com/eosforce/bus-service/force-grpc-server/basic"
-	force_relay_commit "github.com/eosforce/bus-service/force_relay_commit"
-	"github.com/eosforce/goeosforce/ecc"
 )
 
 const (

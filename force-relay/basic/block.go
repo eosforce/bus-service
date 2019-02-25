@@ -3,9 +3,8 @@ package basic
 import (
 	"fmt"
 
-	force_relay_commit "github.com/eosforce/bus-service/force_relay_commit"
+	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 	force "github.com/fanyang1988/force-go"
-	//"github.com/eosforce/goeosforce/system"
 )
 
 //处理先关的块信息

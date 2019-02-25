@@ -1,7 +1,6 @@
 package basic
 
 import (
-	//"fmt"
 	"encoding/json"
 
 	eos "github.com/eosforce/goeosforce"

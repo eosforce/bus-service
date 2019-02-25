@@ -8,8 +8,7 @@ import (
 	"strings"
 
 	yaml2json "github.com/bronze1man/go-yaml2json"
-	"github.com/eosforce/bus-service/force-grpc-server/common"
-
+	"github.com/eosforce/bus-service/force-relay/common"
 	"github.com/eosforce/forcec/cli"
 	eosvault "github.com/eosforce/forcec/vault"
 	eos "github.com/eosforce/goeosforce"

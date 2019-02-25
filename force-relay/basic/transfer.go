@@ -1,18 +1,15 @@
 package basic
 
 import (
+	"encoding/hex"
 	"fmt"
+	"io/ioutil"
+	"strings"
 	"time"
 
 	eos "github.com/eosforce/goeosforce"
 	"github.com/eosforce/goeosforce/system"
 	"github.com/tidwall/gjson"
-
-	//"github.com/eosforce/goeosforce/ecc"
-	"encoding/hex"
-	"io/ioutil"
-	"strings"
-	//"github.com/eosforce/forcegrpc/force-grpc-server/common"
 )
 
 var transferabi *eos.ABI

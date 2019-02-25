@@ -1,8 +1,7 @@
 package basic
 
 import (
-	//"fmt"
-	force_relay_commit "github.com/eosforce/bus-service/force_relay_commit"
+	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 	eos "github.com/eosforce/goeosforce"
 )
 
