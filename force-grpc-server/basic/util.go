@@ -3,15 +3,16 @@ package basic
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/bronze1man/go-yaml2json"
-	"github.com/eosforce/bus-service/force-grpc-server/common"
 	"io/ioutil"
 	"os"
 	"strings"
 
+	yaml2json "github.com/bronze1man/go-yaml2json"
+	"github.com/eosforce/bus-service/force-grpc-server/common"
+
 	"github.com/eosforce/forcec/cli"
 	eosvault "github.com/eosforce/forcec/vault"
-	"github.com/eosforce/goeosforce"
+	eos "github.com/eosforce/goeosforce"
 )
 
 func toSHA256Bytes(in, field string) eos.SHA256Bytes {
@@ -22,10 +23,9 @@ func pushEOSCActions(api *eos.API, actions ...*eos.Action) {
 	common.PushEOSCActions(api, actions...)
 }
 
-func getEOSCTransaction(api *eos.API, actions ...*eos.Action) *eos.Transaction{
+func getEOSCTransaction(api *eos.API, actions ...*eos.Action) *eos.Transaction {
 	return common.GetTransaction(api, actions...)
 }
-
 
 func errorCheck(prefix string, err error) {
 	if err != nil {
@@ -60,7 +60,6 @@ func yamlUnmarshal(cnt []byte, v interface{}) error {
 
 	return json.Unmarshal(jsonCnt, v)
 }
-
 
 func loadYAMLOrJSONFile(filename string, v interface{}) error {
 	cnt, err := ioutil.ReadFile(filename)
@@ -113,4 +112,3 @@ func isStubABI(abi eos.ABI) bool {
 		abi.Structs == nil && abi.Tables == nil &&
 		abi.Types == nil
 }
-

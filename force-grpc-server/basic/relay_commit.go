@@ -15,6 +15,7 @@ type block struct {
 	ActionMRoot      eos.Checksum256 `json:"action_mroot"`
 	MRoot            eos.Checksum256 `json:"mroot"`
 }
+
 //链的名称是可配置的		transfer是发送者的名称		会给发送者奖励	目前应该没有用  可配置
 type CommitParam struct {
 	Name     eos.Name        `json:"chain"`
@@ -46,7 +47,7 @@ func SetTransfer(transfername string) {
 	transfer = eos.AccountName(transfername)
 }
 
-func newCommitAction(relayblock *force_relay_commit.RelayBlock,Action []*force_relay_commit.RelayAction) *eos.Action {
+func newCommitAction(relayblock *force_relay_commit.RelayBlock, Action []*force_relay_commit.RelayAction) *eos.Action {
 	b := block{
 		Producer:         eos.AN(relayblock.Producer),
 		ID:               relayblock.Id,
@@ -56,24 +57,24 @@ func newCommitAction(relayblock *force_relay_commit.RelayBlock,Action []*force_r
 		ActionMRoot:      relayblock.ActionMroot,
 		MRoot:            relayblock.Mroot,
 	}
-	
+
 	acts := make([]action, 0, 8)[:]
-	for _, ActionValue := range Action  {
-		auth := make([]permissionLevel,0,8)[:]
-		for _,authori := range ActionValue.Authorization {
-			auth = append(auth,permissionLevel{
+	for _, ActionValue := range Action {
+		auth := make([]permissionLevel, 0, 8)[:]
+		for _, authori := range ActionValue.Authorization {
+			auth = append(auth, permissionLevel{
 				Actor:      eos.AN(authori.Actor),
 				Permission: eos.PN(authori.Permission),
 			})
 		}
 		acts = append(acts, action{
-			Account: eos.AN(ActionValue.Account),
-			Name:    eos.ActN(ActionValue.ActionName),
-			Authorization:auth[:],
-			Data:		ActionValue.Data[:],
+			Account:       eos.AN(ActionValue.Account),
+			Name:          eos.ActN(ActionValue.ActionName),
+			Authorization: auth[:],
+			Data:          ActionValue.Data[:],
 		})
 	}
-	
+
 	//chain := eos.Name("eosforce")
 	return &eos.Action{
 		Account: eos.AN("force.relay"),

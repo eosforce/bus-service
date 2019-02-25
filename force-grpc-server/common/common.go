@@ -18,7 +18,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
-var global_vault_file string="/home/xuyapeng/go_workspace/src/github.com/eosforce/forcec/forcec/eosc-vault.json"
+var global_vault_file string = "/home/xuyapeng/go_workspace/src/github.com/eosforce/forcec/forcec/eosc-vault.json"
 
 var vault_password string
 
@@ -28,11 +28,11 @@ func SetVaultPasswd(passwd string) {
 	vault_password = passwd
 }
 
-func SetVaultFile (file string) {
+func SetVaultFile(file string) {
 	global_vault_file = file
 }
 
-func SetDestUrl (url string) {
+func SetDestUrl(url string) {
 	dest_url = url
 }
 
@@ -50,7 +50,7 @@ func GetAPI() *eos.API {
 }
 
 func SetupWallet() (*eosvault.Vault, error) {
-	walletFile := global_vault_file//viper.GetString("global-vault-file")
+	walletFile := global_vault_file //viper.GetString("global-vault-file")
 	if _, err := os.Stat(walletFile); err != nil {
 		return nil, fmt.Errorf("wallet file %q missing: %s", walletFile, err)
 	}
@@ -118,7 +118,7 @@ func PermissionsToPermissionLevels(in []string) (out []eos.PermissionLevel, err 
 	return
 }
 
-func GetTransaction(api *eos.API, actions ...*eos.Action) *eos.Transaction{
+func GetTransaction(api *eos.API, actions ...*eos.Action) *eos.Transaction {
 	opts := &eos.TxOptions{}
 
 	if chainID := viper.GetString("global-offline-chain-id"); chainID != "" {
@@ -188,7 +188,7 @@ func PushEOSCActionsAndContextFreeActions(api *eos.API, contextFreeActions []*eo
 		fmt.Println("Error fetching tapos + chain_id from the chain (specify --offline flags for offline operations):", err)
 		os.Exit(1)
 	}
-	
+
 	tx := eos.NewTransaction(actions, opts)
 	if len(contextFreeActions) > 0 {
 		tx.ContextFreeActions = contextFreeActions
