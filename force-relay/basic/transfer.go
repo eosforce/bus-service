@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
-	"time"
 
 	eos "github.com/eosforce/goeosforce"
-	"github.com/eosforce/goeosforce/system"
 	"github.com/tidwall/gjson"
 )
 
@@ -22,27 +20,9 @@ func SetAbiFilePath(path string) {
 	transferabi, _ = eos.NewABI(r)
 }
 
-func Transfer(from, to, amount, memo, trxid string) {
-	quantity, err := eos.NewEOSAssetFromString("1.0000 EOS")
-	errorCheck("invalid amount", err)
-
-	account_from := toAccount("eosforce", "Transfer.go toaccount")
-	account_to := toAccount("biosbpa", "Transfer.go toaccount")
-
-	api := getAPI()
-	memo = "from:" + from + " to:" + to + " amount:" + amount + " trxid:" + trxid + " time" + time.Now().Format("2006/1/2 15:04:05")
-	action := system.NewTransfer(account_from, account_to, quantity, memo)
-	pushEOSCActions(api, action)
-}
-
 func DecodeTransfer(actionjson, trxid string) {
-	//accountName := toAccount("force.token","DecodeTransfer")
-	action_name := toActionName("transfer", "DecodeTransfer")
-	//api := getAPI()
-	//abi, err := api.GetABI(accountName)
-
 	hexData, _ := hex.DecodeString(actionjson)
-	data, _ := transferabi.DecodeAction(hexData, action_name)
+	data, _ := transferabi.DecodeAction(hexData, eos.ActN("transfer"))
 	from := gjson.GetBytes(data, "from").String()
 	to := gjson.GetBytes(data, "to").String()
 	quantity := gjson.GetBytes(data, "quantity").String()
