@@ -1,6 +1,7 @@
 package basic
 
 import (
+	"github.com/cihub/seelog"
 	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 	eos "github.com/eosforce/goeosforce"
 )
@@ -46,7 +47,7 @@ func SetTransfer(transfername string) {
 	transfer = eos.AccountName(transfername)
 }
 
-func newCommitAction(relayblock *force_relay_commit.RelayBlock, Action []*force_relay_commit.RelayAction) *eos.Action {
+func newCommitAction(relayblock *force_relay_commit.RelayBlock, actionsToCommit []*force_relay_commit.RelayAction) *eos.Action {
 	b := block{
 		Producer:         eos.AN(relayblock.Producer),
 		ID:               relayblock.Id,
@@ -57,24 +58,26 @@ func newCommitAction(relayblock *force_relay_commit.RelayBlock, Action []*force_
 		MRoot:            relayblock.Mroot,
 	}
 
-	acts := make([]action, 0, 8)[:]
-	for _, ActionValue := range Action {
-		auth := make([]permissionLevel, 0, 8)[:]
-		for _, authori := range ActionValue.Authorization {
+	seelog.Infof("commit block %v %d", b.ID, len(actionsToCommit))
+
+	acts := make([]action, 0, len(actionsToCommit)+1)
+	for _, act := range actionsToCommit {
+		auth := make([]permissionLevel, 0, 8)
+		for _, authori := range act.Authorization {
 			auth = append(auth, permissionLevel{
 				Actor:      eos.AN(authori.Actor),
 				Permission: eos.PN(authori.Permission),
 			})
 		}
 		acts = append(acts, action{
-			Account:       eos.AN(ActionValue.Account),
-			Name:          eos.ActN(ActionValue.ActionName),
-			Authorization: auth[:],
-			Data:          ActionValue.Data[:],
+			Account:       eos.AN(act.Account),
+			Name:          eos.ActN(act.ActionName),
+			Authorization: auth,
+			Data:          act.Data,
 		})
+		//seelog.Infof("action %v", act)
 	}
 
-	//chain := eos.Name("eosforce")
 	return &eos.Action{
 		Account: eos.AN("force.relay"),
 		Name:    eos.ActN("commit"),
