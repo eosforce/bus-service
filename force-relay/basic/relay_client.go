@@ -19,6 +19,8 @@ func CreateClient(configPath string) {
 	}
 }
 
-func getLastCommittedBlockNum() uint32 {
+// GetLastCommittedBlock get last committed block to relay chain
+func GetLastCommittedBlock() uint32 {
+
 	return 0
 }

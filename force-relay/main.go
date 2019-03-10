@@ -2,9 +2,10 @@ package main
 
 import (
 	"flag"
-	"github.com/cihub/seelog"
 	"log"
 	"net"
+
+	"github.com/cihub/seelog"
 
 	"github.com/eosforce/bus-service/force-relay/basic"
 	"github.com/eosforce/bus-service/force-relay/pbs/relay"
@@ -46,8 +47,11 @@ func main() {
 	}
 
 	basic.CreateClient(*configPath)
-	basic.SetChain(*chain)
-	basic.SetTransfer(*transfer)
+
+	relayCfg := basic.NewCfg(*chain, *transfer)
+	relayCfg.AppendActionInfo("force.token", "transfer")
+	relayCfg.AppendActionInfo("force", "newaccount")
+	basic.SetCfg(relayCfg)
 
 	s := grpc.NewServer()
 	force_relay_commit.RegisterRelayCommitServer(s, &server{})

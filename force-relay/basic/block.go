@@ -1,17 +1,37 @@
 package basic
 
 import (
-	"fmt"
+	"encoding/binary"
 
-	"github.com/eosforce/bus-service/force-relay/pbs/relay"
+	eos "github.com/eosforce/goeosforce"
 )
 
-// HandRelayBlock handle block from side chain
-func HandRelayBlock(block *force_relay_commit.RelayBlock, Action []*force_relay_commit.RelayAction) {
-	commitAct := newCommitAction(block, Action)
-	_, err := client.PushActions(commitAct)
-	if err != nil {
-		fmt.Println("push action error  ", err.Error())
-		return
+type block struct {
+	Producer         eos.AccountName `json:"producer"`
+	Num              uint32          `json:"num"`
+	ID               eos.Checksum256 `json:"id"`
+	Previous         eos.Checksum256 `json:"previous"`
+	Confirmed        uint16          `json:"confirmed"`
+	TransactionMRoot eos.Checksum256 `json:"transaction_mroot"`
+	ActionMRoot      eos.Checksum256 `json:"action_mroot"`
+	MRoot            eos.Checksum256 `json:"mroot"`
+}
+
+func blockNum(blockID []byte) uint32 {
+	if len(blockID) < 32 {
+		return 0
 	}
+	return binary.BigEndian.Uint32(blockID[:32])
+}
+
+type action struct {
+	Account       eos.AccountName   `json:"account"`
+	Name          eos.ActionName    `json:"name"`
+	Authorization []permissionLevel `json:"authorization"`
+	Data          []byte            `json:"data"`
+}
+
+type permissionLevel struct {
+	Actor      eos.AccountName    `json:"actor"`
+	Permission eos.PermissionName `json:"permission"`
 }
