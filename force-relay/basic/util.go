@@ -2,21 +2,12 @@ package basic
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"os"
 	"strings"
 
 	"github.com/bronze1man/go-yaml2json"
-	eos "github.com/eosforce/goeosforce"
+	"github.com/eosforce/goeosforce"
 )
-
-func errorCheck(prefix string, err error) {
-	if err != nil {
-		fmt.Printf("ERROR: %s: %s\n", prefix, err)
-		os.Exit(1)
-	}
-}
 
 func yamlUnmarshal(cnt []byte, v interface{}) error {
 	jsonCnt, err := yaml2json.Convert(cnt)
