@@ -1,10 +1,12 @@
 {
-    "url":"http://127.0.0.1:8001",
+    "url":"http://127.0.0.1:11001",
     "keys":[
-        {"name":"eosforce", "key":"5KRKkaFpJZpDu7L2ws2Hi2Cj1HPW3sHererzvqKmkMBHX7gzyqd"},
-        {"name":"biosbpa", "key":"5JGYiR3a3htc6FTDPGZsKpZih2duX3oNzCfaDnAK3mEviBPHYVZ"}
+        {"name":"eosforce", "key":"5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"},
+        {"name":"side", "key":"5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"},
+        {"name":"biosbpa", "key":"5KRBXizCcubrjar6bYKBoihN4PNaRYQUpPjGdvRqjn4XioR32nW"}
+
     ],
     "pri":[
-        "5KRKkaFpJZpDu7L2ws2Hi2Cj1HPW3sHererzvqKmkMBHX7gzyqd"
+        "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
     ]
 }

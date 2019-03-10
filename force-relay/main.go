@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/cihub/seelog"
 	"log"
 	"net"
 
 	"github.com/eosforce/bus-service/force-relay/basic"
-	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
+	"github.com/eosforce/bus-service/force-relay/pbs/relay"
 	"github.com/eosforce/goeosforce/ecc"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -20,8 +21,8 @@ const (
 var tcp_port = flag.Int("tcp_port", 50051, "the port tcp listen")
 var tcp_ip = flag.String("tcp_ip", "127.0.0.1", "the ip tcp listen")
 var configPath = flag.String("cfg", "./config.json", "confg file path")
-var chain = flag.String("chain name", "eosforce", "the name of chain")
-var transfer = flag.String("transfer name", "eosforce", "the name of transfer")
+var chain = flag.String("chain", "eosforce", "the name of chain")
+var transfer = flag.String("transfer", "eosforce", "the name of transfer")
 
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
@@ -31,7 +32,7 @@ func init() {
 }
 
 func (s *server) RpcSendaction(ctx context.Context, in *force_relay_commit.RelayCommitRequest) (*force_relay_commit.RelayCommitReply, error) {
-	//接下来解析transaction中的内容
+	seelog.Infof("req")
 	basic.HandRelayBlock(in.Block, in.Action)
 	return &force_relay_commit.RelayCommitReply{Reply: "get Block"}, nil
 }
@@ -44,7 +45,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	basic.Createclient(*configPath)
+	basic.CreateClient(*configPath)
 	basic.SetChain(*chain)
 	basic.SetTransfer(*transfer)
 

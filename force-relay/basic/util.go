@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	yaml2json "github.com/bronze1man/go-yaml2json"
+	"github.com/bronze1man/go-yaml2json"
 	eos "github.com/eosforce/goeosforce"
 )
 

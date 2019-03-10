@@ -1,13 +1,16 @@
 package basic
 
 import (
+	"encoding/binary"
+
 	"github.com/cihub/seelog"
-	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
+	"github.com/eosforce/bus-service/force-relay/pbs/relay"
 	eos "github.com/eosforce/goeosforce"
 )
 
 type block struct {
 	Producer         eos.AccountName `json:"producer"`
+	Num              uint32          `json:"num"`
 	ID               eos.Checksum256 `json:"id"`
 	Previous         eos.Checksum256 `json:"previous"`
 	Confirmed        uint16          `json:"confirmed"`
@@ -16,8 +19,7 @@ type block struct {
 	MRoot            eos.Checksum256 `json:"mroot"`
 }
 
-//链的名称是可配置的		transfer是发送者的名称		会给发送者奖励	目前应该没有用  可配置
-type CommitParam struct {
+type commitParam struct {
 	Name     eos.Name        `json:"chain"`
 	Transfer eos.AccountName `json:"transfer"`
 	Block    block           `json:"block"`
@@ -39,17 +41,25 @@ type permissionLevel struct {
 var chain eos.Name
 var transfer eos.AccountName
 
-func SetChain(chainname string) {
-	chain = eos.Name(chainname)
+func SetChain(chainName string) {
+	chain = eos.Name(chainName)
 }
 
-func SetTransfer(transfername string) {
-	transfer = eos.AccountName(transfername)
+func SetTransfer(transferName string) {
+	transfer = eos.AccountName(transferName)
+}
+
+func blockNum(blockID []byte) uint32 {
+	if len(blockID) < 32 {
+		return 0
+	}
+	return binary.BigEndian.Uint32(blockID[:32])
 }
 
 func newCommitAction(relayblock *force_relay_commit.RelayBlock, actionsToCommit []*force_relay_commit.RelayAction) *eos.Action {
 	b := block{
 		Producer:         eos.AN(relayblock.Producer),
+		Num:              blockNum(relayblock.Id),
 		ID:               relayblock.Id,
 		Previous:         relayblock.Previous,
 		Confirmed:        uint16(relayblock.Confirmed),
@@ -58,7 +68,7 @@ func newCommitAction(relayblock *force_relay_commit.RelayBlock, actionsToCommit 
 		MRoot:            relayblock.Mroot,
 	}
 
-	seelog.Infof("commit block %v %d", b.ID, len(actionsToCommit))
+	seelog.Infof("commit block %d %v %d", b.Num, b.ID, len(actionsToCommit))
 
 	acts := make([]action, 0, len(actionsToCommit)+1)
 	for _, act := range actionsToCommit {
@@ -84,7 +94,7 @@ func newCommitAction(relayblock *force_relay_commit.RelayBlock, actionsToCommit 
 		Authorization: []eos.PermissionLevel{
 			{Actor: eos.AccountName(chain), Permission: eos.PN("active")},
 		},
-		ActionData: eos.NewActionData(CommitParam{
+		ActionData: eos.NewActionData(commitParam{
 			Name:     chain,
 			Transfer: transfer,
 			Block:    b,
