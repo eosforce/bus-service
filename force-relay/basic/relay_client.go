@@ -24,6 +24,11 @@ func CreateClient(configPath string) {
 	}
 }
 
+type lastCommitBlockInfo struct {
+	Chain eos.Name `json:"chain"`
+	Last  block    `json:"last"`
+}
+
 // GetLastCommittedBlock get last committed block to relay chain
 func GetLastCommittedBlock() (*block, error) {
 	req := eos.GetTableRowsRequest{
@@ -37,7 +42,7 @@ func GetLastCommittedBlock() (*block, error) {
 		return nil, err
 	}
 
-	rspBlock := make([]block, 0, 32)
+	rspBlock := make([]lastCommitBlockInfo, 0, 32)
 	err = res.BinaryToStructs(&rspBlock)
 	if err != nil {
 		return nil, err
@@ -47,5 +52,5 @@ func GetLastCommittedBlock() (*block, error) {
 		return nil, errors.New("rsp block info no find")
 	}
 
-	return &rspBlock[0], nil
+	return &rspBlock[0].Last, nil
 }

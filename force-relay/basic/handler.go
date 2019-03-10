@@ -3,14 +3,18 @@ package basic
 import (
 	"fmt"
 
+	"github.com/cihub/seelog"
+
 	"github.com/eosforce/bus-service/force-relay/pbs/relay"
 )
 
 // HandRelayBlock handle block from side chain
 func HandRelayBlock(block *force_relay_commit.RelayBlock, Action []*force_relay_commit.RelayAction) {
 	blockCommitLast, err := GetLastCommittedBlock()
+	lastNum := blockNum(blockCommitLast.ID)
 	num := blockNum(block.Id)
-	if err == nil && blockCommitLast != nil && num != 0 && blockCommitLast.Num >= num {
+	if err == nil && blockCommitLast != nil && num != 0 && lastNum >= num {
+		seelog.Debugf("no need commit %v to %v", lastNum, num)
 		return
 	}
 

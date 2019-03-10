@@ -5,8 +5,6 @@ import (
 	"log"
 	"net"
 
-	"github.com/cihub/seelog"
-
 	"github.com/eosforce/bus-service/force-relay/basic"
 	"github.com/eosforce/bus-service/force-relay/pbs/relay"
 	"github.com/eosforce/goeosforce/ecc"
@@ -33,7 +31,6 @@ func init() {
 }
 
 func (s *server) RpcSendaction(ctx context.Context, in *force_relay_commit.RelayCommitRequest) (*force_relay_commit.RelayCommitReply, error) {
-	seelog.Infof("req")
 	basic.HandRelayBlock(in.Block, in.Action)
 	return &force_relay_commit.RelayCommitReply{Reply: "get Block"}, nil
 }

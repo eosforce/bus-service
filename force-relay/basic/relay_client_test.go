@@ -22,4 +22,7 @@ func TestGetLastCommittedBlock(t *testing.T) {
 	}
 
 	t.Logf("rsp info %v", rsp)
+	t.Logf("rsp info %v", rsp.ID)
+	t.Logf("rsp info %v", rsp.Num)
+	t.Logf("rsp info %v", rsp.Producer)
 }
