@@ -5,8 +5,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/cihub/seelog"
-
 	"github.com/eosforce/goeosforce"
 
 	"github.com/fanyang1988/force-go"
@@ -38,8 +36,6 @@ func GetLastCommittedBlock() (*block, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	seelog.Infof("l %v", res.Rows)
 
 	rspBlock := make([]block, 0, 32)
 	err = res.BinaryToStructs(&rspBlock)

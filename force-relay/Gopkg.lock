@@ -34,7 +34,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e7a779397d96edbe3ed71f56985823926c67527796d4772210008183b73f5f0a"
+  digest = "1:610ea571957b15caf6043bc67f22e2d9bf57b18e332d10283dcbe3488b726f19"
   name = "github.com/fanyang1988/force-go"
   packages = [
     ".",
@@ -42,7 +42,7 @@
     "config",
   ]
   pruneopts = "UT"
-  revision = "dd88d3d65d576f2ceeb9d421a9bcdb0436d4de29"
+  revision = "a7411f22d441904c811661feb599654bf4eabc66"
 
 [[projects]]
   digest = "1:64c2b533ffd17023738c534548ab2455d7f519bc15ed4225145425ed2222448b"
@@ -253,7 +253,7 @@
     "github.com/eosforce/goeosforce/ecc",
     "github.com/fanyang1988/force-go",
     "github.com/golang/protobuf/proto",
-    "github.com/tidwall/gjson",
+    "github.com/pkg/errors",
     "golang.org/x/net/context",
     "google.golang.org/grpc",
     "google.golang.org/grpc/reflection",
