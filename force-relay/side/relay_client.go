@@ -3,6 +3,8 @@ package side
 import (
 	"fmt"
 
+	"github.com/eosforce/bus-service/force-relay/chainhandler"
+
 	eos "github.com/eosforce/goeosforce"
 	"github.com/fanyang1988/force-go"
 	"github.com/pkg/errors"
@@ -23,12 +25,12 @@ func CreateClient(configPath string) {
 }
 
 type lastCommitBlockInfo struct {
-	Chain eos.Name `json:"chain"`
-	Last  block    `json:"last"`
+	Chain eos.Name           `json:"chain"`
+	Last  chainhandler.Block `json:"last"`
 }
 
 // GetLastCommittedBlock get last committed block to relay chain
-func GetLastCommittedBlock() (*block, error) {
+func GetLastCommittedBlock() (*chainhandler.Block, error) {
 	req := eos.GetTableRowsRequest{
 		Code:  "force.relay",
 		Scope: string(cfg.Chain),

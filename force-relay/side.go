@@ -1,8 +1,9 @@
 package main
 
 import (
-	"context"
 	"net"
+
+	"github.com/eosforce/bus-service/force-relay/chainhandler"
 
 	"github.com/cihub/seelog"
 	commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
@@ -10,13 +11,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
-
-type sideServer struct{}
-
-func (s *sideServer) RpcSendaction(ctx context.Context, in *commit.RelayCommitRequest) (*commit.RelayCommitReply, error) {
-	side.HandRelayBlock(in.Block, in.Action)
-	return &commit.RelayCommitReply{Reply: "get Block"}, nil
-}
 
 func startSideService() {
 	lis, err := net.Listen("tcp", *transferURL)
@@ -32,7 +26,11 @@ func startSideService() {
 	side.SetCfg(relayCfg)
 
 	service := grpc.NewServer()
-	commit.RegisterRelayCommitServer(service, &sideServer{})
+	commit.RegisterRelayCommitServer(service,
+		chainhandler.NewChainHandler(
+			func(block *chainhandler.Block, actions []chainhandler.Action) {
+				side.HandRelayBlock(block, actions)
+			}))
 	reflection.Register(service)
 	if err := service.Serve(lis); err != nil {
 		seelog.Errorf("failed to serve: %v", err.Error())
