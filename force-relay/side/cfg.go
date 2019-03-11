@@ -1,4 +1,4 @@
-package basic
+package side
 
 import eos "github.com/eosforce/goeosforce"
 

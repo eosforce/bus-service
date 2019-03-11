@@ -1,11 +1,11 @@
-package basic
+package side
 
 import (
 	"fmt"
 
 	"github.com/pkg/errors"
 
-	"github.com/eosforce/goeosforce"
+	eos "github.com/eosforce/goeosforce"
 
 	"github.com/fanyang1988/force-go"
 )

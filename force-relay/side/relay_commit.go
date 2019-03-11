@@ -1,8 +1,8 @@
-package basic
+package side
 
 import (
 	"github.com/cihub/seelog"
-	"github.com/eosforce/bus-service/force-relay/pbs/relay"
+	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 	eos "github.com/eosforce/goeosforce"
 )
 

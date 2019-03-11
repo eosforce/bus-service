@@ -1,4 +1,4 @@
-package basic
+package side
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/bronze1man/go-yaml2json"
-	"github.com/eosforce/goeosforce"
+	eos "github.com/eosforce/goeosforce"
 )
 
 func yamlUnmarshal(cnt []byte, v interface{}) error {

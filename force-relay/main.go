@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/eosforce/bus-service/force-relay/basic"
 	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
+	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/eosforce/goeosforce/ecc"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -30,7 +30,7 @@ func init() {
 }
 
 func (s *server) RpcSendaction(ctx context.Context, in *force_relay_commit.RelayCommitRequest) (*force_relay_commit.RelayCommitReply, error) {
-	basic.HandRelayBlock(in.Block, in.Action)
+	side.HandRelayBlock(in.Block, in.Action)
 	return &force_relay_commit.RelayCommitReply{Reply: "get Block"}, nil
 }
 
@@ -42,12 +42,12 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	basic.CreateClient(*configPath)
+	side.CreateClient(*configPath)
 
-	relayCfg := basic.NewCfg(*chain, *transfer)
+	relayCfg := side.NewCfg(*chain, *transfer)
 	relayCfg.AppendActionInfo("force.token", "transfer")
 	relayCfg.AppendActionInfo("force", "newaccount")
-	basic.SetCfg(relayCfg)
+	side.SetCfg(relayCfg)
 
 	s := grpc.NewServer()
 	force_relay_commit.RegisterRelayCommitServer(s, &server{})
