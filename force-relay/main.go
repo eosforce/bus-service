@@ -4,7 +4,6 @@ import (
 	"flag"
 
 	"github.com/cihub/seelog"
-
 	"github.com/eosforce/goeosforce/ecc"
 )
 

@@ -2,7 +2,7 @@ package side
 
 import (
 	"github.com/cihub/seelog"
-	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
+	commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 	eos "github.com/eosforce/goeosforce"
 )
 
@@ -13,7 +13,7 @@ type commitParam struct {
 	Actions  []action        `json:"actions"`
 }
 
-func newCommitAction(relayBlock *force_relay_commit.RelayBlock, actionsToCommit []*force_relay_commit.RelayAction) *eos.Action {
+func newCommitAction(relayBlock *commit.RelayBlock, actionsToCommit []*commit.RelayAction) *eos.Action {
 	b := block{
 		Producer:         eos.AN(relayBlock.Producer),
 		Num:              blockNum(relayBlock.Id),

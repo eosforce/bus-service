@@ -3,11 +3,9 @@ package side
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
-
 	eos "github.com/eosforce/goeosforce"
-
 	"github.com/fanyang1988/force-go"
+	"github.com/pkg/errors"
 )
 
 // client client to force relay chain
