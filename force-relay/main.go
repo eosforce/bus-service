@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"github.com/eosforce/bus-service/force-relay/basic"
-	"github.com/eosforce/bus-service/force-relay/pbs/relay"
+	force_relay_commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 	"github.com/eosforce/goeosforce/ecc"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -17,8 +17,7 @@ const (
 	port = ":50051"
 )
 
-var tcp_port = flag.Int("tcp_port", 50051, "the port tcp listen")
-var tcp_ip = flag.String("tcp_ip", "127.0.0.1", "the ip tcp listen")
+var transferURL = flag.String("url", "0.0.0.0:50051", "transfer service url to listen")
 var configPath = flag.String("cfg", "./config.json", "confg file path")
 var chain = flag.String("chain", "eosforce", "the name of chain")
 var transfer = flag.String("transfer", "eosforce", "the name of transfer")
@@ -38,7 +37,7 @@ func (s *server) RpcSendaction(ctx context.Context, in *force_relay_commit.Relay
 func main() {
 	flag.Parse()
 
-	lis, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(*tcp_ip), *tcp_port, ""})
+	lis, err := net.Listen("tcp", *transferURL)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
