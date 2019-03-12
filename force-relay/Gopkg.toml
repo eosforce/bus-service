@@ -34,10 +34,6 @@
   version = "1.0.0"
 
 [[constraint]]
-  branch = "forceio"
-  name = "github.com/eosforce/goeosforce"
-
-[[constraint]]
   branch = "master"
   name = "github.com/fanyang1988/force-go"
 

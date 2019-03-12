@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  digest = "1:4ae1039e4d181f94bb99376715a3b97353a101ad4c91fb4118694d1b97763f32"
-  name = "github.com/bronze1man/go-yaml2json"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f6f64b738964477e1f4f42de9e7ac2ab97d8c02a"
-
-[[projects]]
   digest = "1:50e893a85575fa48dc4982a279e50e2fd8b74e4f7c587860c1e25c77083b8125"
   name = "github.com/cihub/seelog"
   packages = ["."]
@@ -18,9 +10,9 @@
   version = "v2.6"
 
 [[projects]]
-  branch = "forceio"
-  digest = "1:89a54edcd372407f7605be1c06372bf290ed5a408e67694a52dcd966f0ab9d9c"
-  name = "github.com/eosforce/goeosforce"
+  branch = "master"
+  digest = "1:f273f92885b50ada2793edc3a07d53c6ff6b49106b41880f0d826afa78c4f8a2"
+  name = "github.com/eosforce/goforceio"
   packages = [
     ".",
     "btcsuite/btcd/btcec",
@@ -30,11 +22,11 @@
     "eoserr",
   ]
   pruneopts = "UT"
-  revision = "2aed997fce17fbaf2ce29bda52959a26c9860181"
+  revision = "3b584233ec5d6d33e383c59d0712f2bcad9d354f"
 
 [[projects]]
   branch = "master"
-  digest = "1:610ea571957b15caf6043bc67f22e2d9bf57b18e332d10283dcbe3488b726f19"
+  digest = "1:419b2a872fb8c9f431be6e9def8cb8df8ba45bf86904ced88f098bc72f8af03e"
   name = "github.com/fanyang1988/force-go"
   packages = [
     ".",
@@ -42,7 +34,7 @@
     "config",
   ]
   pruneopts = "UT"
-  revision = "a7411f22d441904c811661feb599654bf4eabc66"
+  revision = "f364ec4ae13f7ad9c7af4e6deaba9bcef1fd6fd3"
 
 [[projects]]
   digest = "1:64c2b533ffd17023738c534548ab2455d7f519bc15ed4225145425ed2222448b"
@@ -152,15 +144,15 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "c10a0554eabf8a6a7a6cc3097c9d9f43dcee0a43"
+  revision = "d8887717615a059821345a5c23649351b52a1c0b"
 
 [[projects]]
   branch = "master"
-  digest = "1:1ac73f06b9fb3a62fac8bd63b7312ba35b03301d0ea89ebdac41a5757c54cea4"
+  digest = "1:f36c7b9a36158e62ffe5d8b02d1b5955500c13106cdaeebf5323d88863cae96f"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "10058d7d4faa7dd5ef860cbd31af00903076e7b8"
+  revision = "c8c8c57fd1e1a977c10821a559dda983a9a9a3b5"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -235,22 +227,13 @@
   revision = "2fdaae294f38ed9a121193c51ec99fecd3b13eb7"
   version = "v1.19.0"
 
-[[projects]]
-  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/bronze1man/go-yaml2json",
     "github.com/cihub/seelog",
-    "github.com/eosforce/goeosforce",
-    "github.com/eosforce/goeosforce/ecc",
+    "github.com/eosforce/goforceio",
+    "github.com/eosforce/goforceio/ecc",
     "github.com/fanyang1988/force-go",
     "github.com/golang/protobuf/proto",
     "github.com/pkg/errors",

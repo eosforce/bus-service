@@ -3,7 +3,7 @@ package chainhandler
 import (
 	"encoding/binary"
 
-	eos "github.com/eosforce/goeosforce"
+	eos "github.com/eosforce/goforceio"
 )
 
 type Block struct {

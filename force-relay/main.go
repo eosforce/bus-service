@@ -4,7 +4,7 @@ import (
 	"flag"
 
 	"github.com/cihub/seelog"
-	"github.com/eosforce/goeosforce/ecc"
+	"github.com/eosforce/goforceio/ecc"
 )
 
 var transferURL = flag.String("url", "0.0.0.0:50051", "transfer service url to listen")

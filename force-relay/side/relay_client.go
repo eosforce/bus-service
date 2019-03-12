@@ -5,7 +5,7 @@ import (
 
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 
-	eos "github.com/eosforce/goeosforce"
+	eos "github.com/eosforce/goforceio"
 	"github.com/fanyang1988/force-go"
 	"github.com/pkg/errors"
 )

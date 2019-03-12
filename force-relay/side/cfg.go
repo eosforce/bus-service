@@ -1,6 +1,6 @@
 package side
 
-import eos "github.com/eosforce/goeosforce"
+import eos "github.com/eosforce/goforceio"
 
 type actionToCommit struct {
 	account    eos.AccountName

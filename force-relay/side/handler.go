@@ -8,8 +8,8 @@ import (
 	"github.com/cihub/seelog"
 )
 
-// HandRelayBlock handle block from side chain
-func HandRelayBlock(block *chainhandler.Block, actions []chainhandler.Action) {
+// HandSideBlock handle block from side chain
+func HandSideBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 	blockCommitLast, err := GetLastCommittedBlock()
 	if err != nil {
 		seelog.Errorf("get last commit block err by %v", err.Error())

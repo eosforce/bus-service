@@ -3,7 +3,7 @@ package chainhandler
 import (
 	"context"
 
-	eos "github.com/eosforce/goeosforce"
+	eos "github.com/eosforce/goforceio"
 
 	commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 )

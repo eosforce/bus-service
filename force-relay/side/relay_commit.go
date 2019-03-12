@@ -3,7 +3,7 @@ package side
 import (
 	"github.com/cihub/seelog"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
-	eos "github.com/eosforce/goeosforce"
+	eos "github.com/eosforce/goforceio"
 )
 
 type commitParam struct {

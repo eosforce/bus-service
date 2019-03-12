@@ -29,7 +29,7 @@ func startSideService() {
 	commit.RegisterRelayCommitServer(service,
 		chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
-				side.HandRelayBlock(block, actions)
+				side.HandSideBlock(block, actions)
 			}))
 	reflection.Register(service)
 	if err := service.Serve(lis); err != nil {
