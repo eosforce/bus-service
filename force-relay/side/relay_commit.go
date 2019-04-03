@@ -19,7 +19,7 @@ func newCommitAction(b *chainhandler.Block, actionsToCommit []chainhandler.Actio
 		Account: eos.AN("force.relay"),
 		Name:    eos.ActN("commit"),
 		Authorization: []eos.PermissionLevel{
-			{Actor: eos.AccountName(cfg.Chain), Permission: eos.PN("active")},
+			{Actor: eos.AccountName(cfg.TransferAccount), Permission: eos.PN("active")},
 		},
 		ActionData: eos.NewActionData(commitParam{
 			Name:     cfg.Chain,
