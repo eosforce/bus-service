@@ -6,7 +6,8 @@ import (
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 
 	eos "github.com/eosforce/goforceio"
-	"github.com/fanyang1988/force-go"
+	force "github.com/fanyang1988/force-go"
+	"github.com/fanyang1988/force-go/config"
 	"github.com/pkg/errors"
 )
 
@@ -14,9 +15,9 @@ import (
 var client *force.Client
 
 // CreateClient create client to force relay chain
-func CreateClient(configPath string) {
+func CreateClient(cfg *config.Config) {
 	var err error
-	client, err = force.NewClientFromFile(configPath)
+	client, err = force.NewClient(cfg)
 	if err != nil {
 		fmt.Println("create client error  ", err.Error())
 		panic(err)

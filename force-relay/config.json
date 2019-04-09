@@ -1,12 +1,60 @@
 {
-    "url":"http://192.168.2.179:11001",
-    "keys":[
-        {"name":"eosforce", "key":"5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"},
-        {"name":"side", "key":"5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"},
-        {"name":"biosbpa", "key":"5KRBXizCcubrjar6bYKBoihN4PNaRYQUpPjGdvRqjn4XioR32nW"}
+    "chains": [{
+        "name": "relay",
+        "cfg": {
+            "url": "http://127.0.0.1:8001",
+            "keys": [{
+                "name": "biosbpa",
+                "key": "5KYQvUwt6vMpLJxqg4jSQNkuRfktDHtYDp8LPoBpYo8emvS1GfG"
+            }, {
+                "name": "biosbpb",
+                "key": "5KYQvUwt6vMpLJxqg4jSQNkuRfktDHtYDp8LPoBpYo8emvS1GfG"
+            }, {
+                "name": "biosbpc",
+                "key": "5KYQvUwt6vMpLJxqg4jSQNkuRfktDHtYDp8LPoBpYo8emvS1GfG"
+            }, {
+                "name": "testa",
+                "key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+            }, {
+                "name": "testb",
+                "key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+            }, {
+                "name": "testc",
+                "key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+            }]
+        }
+    }, {
+        "name": "side",
+        "cfg": {
+            "url": "http://192.168.2.180:8001",
+            "keys": [{
+                "name": "testa",
+                "key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+            }, {
+                "name": "testb",
+                "key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+            }, {
+                "name": "testc",
+                "key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+            }]
+        }
+    }],
 
-    ],
-    "pri":[
-        "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
-    ]
+    "transfer": [{
+        "account": "transferc",
+        "relayacc": "testc"
+    }],
+
+    "watcher": [{
+        "account": "testa",
+        "relayaccount": "biosbpa"
+    }, {
+        "account": "testb",
+        "relayaccount": "biosbpb"
+    }],
+
+    "relay":{
+        "chain":"eosforce",
+        "relaycontract":"rs"
+    }
 }

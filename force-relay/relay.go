@@ -3,6 +3,8 @@ package main
 import (
 	"net"
 
+	"github.com/eosforce/bus-service/force-relay/cfg"
+
 	"github.com/eosforce/bus-service/force-relay/relay"
 
 	"github.com/cihub/seelog"
@@ -20,7 +22,7 @@ func startRelayService() {
 		return
 	}
 
-	side.CreateClient(*configPath)
+	side.CreateClient(cfg.GetChainCfg("side"))
 	relayCfg := side.NewCfg(*chain, *transfer)
 	relayCfg.AppendActionInfo("relay.token", "destroy")
 	side.SetCfg(relayCfg)

@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 
+	"github.com/eosforce/bus-service/force-relay/cfg"
+
 	"github.com/cihub/seelog"
 	"github.com/eosforce/goforceio/ecc"
 )
@@ -20,6 +22,12 @@ func init() {
 func main() {
 	flag.Parse()
 	defer seelog.Flush()
+
+	err := cfg.LoadCfgs(*configPath)
+	if err != nil {
+		seelog.Errorf("load cfg err by %s", err.Error())
+		return
+	}
 
 	go func() {
 		startRelayService()

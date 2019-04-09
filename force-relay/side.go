@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 
+	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 
 	"github.com/cihub/seelog"
@@ -19,7 +20,8 @@ func startSideService() {
 		return
 	}
 
-	side.CreateClient(*configPath)
+	// frome side need to commit block to relay
+	side.CreateClient(cfg.GetChainCfg("relay"))
 	relayCfg := side.NewCfg(*chain, *transfer)
 	relayCfg.AppendActionInfo("force.token", "transfer")
 	relayCfg.AppendActionInfo("force", "newaccount")
