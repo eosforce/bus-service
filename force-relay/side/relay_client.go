@@ -3,6 +3,10 @@ package side
 import (
 	"fmt"
 
+	"github.com/cihub/seelog"
+
+	"github.com/eosforce/bus-service/force-relay/cfg"
+
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 
 	eos "github.com/eosforce/goforceio"
@@ -17,6 +21,7 @@ var client *force.Client
 // CreateClient create client to force relay chain
 func CreateClient(cfg *config.Config) {
 	var err error
+	seelog.Tracef("cfg %v", *cfg)
 	client, err = force.NewClient(cfg)
 	if err != nil {
 		fmt.Println("create client error  ", err.Error())
@@ -34,7 +39,7 @@ type lastCommitBlockInfo struct {
 func GetLastCommittedBlock() (*chainhandler.Block, error) {
 	req := eos.GetTableRowsRequest{
 		Code:  "force.relay",
-		Scope: string(cfg.Chain),
+		Scope: cfg.GetRelayCfg().Chain,
 		Table: "relaystat",
 	}
 

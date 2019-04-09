@@ -10,7 +10,6 @@ import (
 	"github.com/cihub/seelog"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
-	"github.com/eosforce/bus-service/force-relay/side"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -22,11 +21,8 @@ func startRelayService() {
 		return
 	}
 
-	side.CreateClient(cfg.GetChainCfg("side"))
-	relayCfg := side.NewCfg(*chain, *transfer)
-	relayCfg.AppendActionInfo("relay.token", "destroy")
-	side.SetCfg(relayCfg)
-
+	// from relay to side, so create side client
+	relay.CreateSideClient(cfg.GetChainCfg("side"))
 	service := grpc.NewServer()
 	commit.RegisterRelayCommitServer(service,
 		chainhandler.NewChainHandler(

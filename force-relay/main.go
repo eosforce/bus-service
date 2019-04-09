@@ -30,7 +30,7 @@ func main() {
 	}
 
 	go func() {
-		startRelayService()
+		//startRelayService()
 	}()
 	// start service for side chain
 	startSideService()

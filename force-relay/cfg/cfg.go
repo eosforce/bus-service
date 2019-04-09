@@ -91,11 +91,11 @@ func LoadCfgs(path string) error {
 		transfers = append(transfers, Relayer{
 			SideAccount: eos.PermissionLevel{
 				Actor:      eos.AN(t.SideAcc),
-				Permission: eos.PN("owner"),
+				Permission: eos.PN("active"),
 			},
 			RelayAccount: eos.PermissionLevel{
 				Actor:      eos.AN(t.RelayAcc),
-				Permission: eos.PN("owner"),
+				Permission: eos.PN("active"),
 			},
 		})
 	}
@@ -104,11 +104,11 @@ func LoadCfgs(path string) error {
 		watchers = append(watchers, Relayer{
 			SideAccount: eos.PermissionLevel{
 				Actor:      eos.AN(t.SideAcc),
-				Permission: eos.PN("owner"),
+				Permission: eos.PN("active"),
 			},
 			RelayAccount: eos.PermissionLevel{
 				Actor:      eos.AN(t.RelayAcc),
-				Permission: eos.PN("owner"),
+				Permission: eos.PN("active"),
 			},
 		})
 	}
