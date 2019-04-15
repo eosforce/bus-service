@@ -8,19 +8,22 @@
     }, {
         "name": "side",
         "cfg": {
-            "url": "http://192.168.2.180:8001",
+            "url": "http://192.168.2.114:8001",
             "pri":["5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"]
         }
     }],
 
     "transfer": [{
-        "account": "transferc",
+        "sideacc": "transferc",
         "relayacc": "testc"
+    },{
+        "sideacc": "transferb",
+        "relayacc": "testb"
     }],
 
     "watcher": [{
-        "account": "testa",
-        "relayaccount": "biosbpa"
+        "sideacc": "testc",
+        "relayacc": "biosbpc"
     }],
 
     "relay":{

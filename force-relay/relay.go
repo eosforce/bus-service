@@ -27,9 +27,11 @@ func startRelayService() {
 	commit.RegisterRelayCommitServer(service,
 		chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
+				seelog.Tracef("hand %d", block.GetNum())
 				relay.HandRelayBlock(block, actions)
 			}))
 	reflection.Register(service)
+	seelog.Infof("start to relay")
 	if err := service.Serve(lis); err != nil {
 		seelog.Errorf("failed to serve: %v", err.Error())
 	}

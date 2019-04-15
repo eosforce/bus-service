@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"time"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
 
@@ -30,8 +31,16 @@ func main() {
 	}
 
 	go func() {
-		//startRelayService()
+		seelog.Infof("start relay service")
+		startRelayService()
 	}()
-	// start service for side chain
-	startSideService()
+
+	go func() {
+		seelog.Infof("start side service")
+		startSideService()
+	}()
+
+	for {
+		time.Sleep(1 * time.Second)
+	}
 }

@@ -85,7 +85,7 @@ func StartCommitter() {
 		for {
 			b := <-blocksChan
 			if handSideBlockImp(&b.block, b.actions) {
-				time.Sleep(150 * time.Millisecond)
+				time.Sleep(10 * time.Millisecond)
 			}
 		}
 	}()
