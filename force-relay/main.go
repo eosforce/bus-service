@@ -31,16 +31,25 @@ func main() {
 	}
 
 	go func() {
+		if len(cfg.GetWatchers()) == 0 {
+			seelog.Infof("no need start relay")
+			return
+		}
 		seelog.Infof("start relay service")
 		startRelayService()
 	}()
 
 	go func() {
+		if len(cfg.GetTransfers()) == 0 {
+			seelog.Infof("no need start side")
+			return
+		}
 		seelog.Infof("start side service")
 		startSideService()
 	}()
 
 	for {
 		time.Sleep(1 * time.Second)
+		// TODO check status
 	}
 }
