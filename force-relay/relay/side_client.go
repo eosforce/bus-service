@@ -1,8 +1,9 @@
 package relay
 
 import (
-	"fmt"
+	"time"
 
+	"github.com/cihub/seelog"
 	force "github.com/fanyang1988/force-go"
 	"github.com/fanyang1988/force-go/config"
 )
@@ -12,11 +13,15 @@ var client *force.Client
 
 // CreateSideClient create client to force side chain
 func CreateSideClient(cfg *config.Config) {
-	var err error
-	client, err = force.NewClient(cfg)
-	if err != nil {
-		fmt.Println("create client error  ", err.Error())
-		panic(err)
-		return
+	for {
+		var err error
+		seelog.Tracef("cfg %v", *cfg)
+		client, err = force.NewClient(cfg)
+		if err != nil {
+			seelog.Warnf("create client error by %s , need retry", err.Error())
+			time.Sleep(1 * time.Second)
+		} else {
+			return
+		}
 	}
 }
