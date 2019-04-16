@@ -20,23 +20,17 @@ func startSideService() {
 		return
 	}
 
-	side.InitCommitter()
-
-	// grpc handler go
-	go func() {
-		service := grpc.NewServer()
-		commit.RegisterRelayCommitServer(service,
-			chainhandler.NewChainHandler(
-				func(block *chainhandler.Block, actions []chainhandler.Action) {
-					side.HandSideBlock(block, actions)
-				}))
-		reflection.Register(service)
-		if err := service.Serve(lis); err != nil {
-			seelog.Errorf("failed to serve: %v", err.Error())
-		}
-	}()
-
 	// frome side need to commit block to relay
 	side.CreateClient(cfg.GetChainCfg("relay"))
-	side.StartCommitter()
+	service := grpc.NewServer()
+	commit.RegisterRelayCommitServer(service,
+		chainhandler.NewChainHandler(
+			func(block *chainhandler.Block, actions []chainhandler.Action) {
+				side.HandSideBlock(block, actions)
+			}))
+	reflection.Register(service)
+	if err := service.Serve(lis); err != nil {
+		seelog.Errorf("failed to serve: %v", err.Error())
+	}
+
 }

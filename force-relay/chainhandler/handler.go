@@ -2,6 +2,9 @@ package chainhandler
 
 import (
 	"context"
+	"sync"
+
+	"github.com/cihub/seelog"
 
 	eos "github.com/eosforce/goforceio"
 
@@ -11,17 +14,38 @@ import (
 type HandlerFunc func(block *Block, actions []Action)
 
 type ChainHandler struct {
-	handler HandlerFunc
+	handler    HandlerFunc
+	blockQueue chan blockQueueItem
+	wg         sync.WaitGroup
 }
 
 func NewChainHandler(h HandlerFunc) *ChainHandler {
-	return &ChainHandler{
-		handler: h,
+	res := &ChainHandler{
+		handler:    h,
+		blockQueue: make(chan blockQueueItem, 4096),
 	}
+
+	res.wg.Add(1)
+	go func(ch *ChainHandler) {
+		defer ch.wg.Done()
+		seelog.Infof("start chain handler")
+		for {
+			bi, ok := <-ch.blockQueue
+			if !ok {
+				seelog.Warnf("handler chan close")
+				return
+			}
+			seelog.Tracef("process block %d", bi.block.Num)
+			ch.handler(&bi.block, bi.actions)
+		}
+	}(res)
+
+	return res
 }
 
 func (s *ChainHandler) RpcSendaction(ctx context.Context, in *commit.RelayCommitRequest) (*commit.RelayCommitReply, error) {
-	block := Block{
+	var bqi blockQueueItem
+	bqi.block = Block{
 		Producer:         eos.AN(in.Block.Producer),
 		Num:              BlockID2Num(in.Block.Id),
 		ID:               in.Block.Id,
@@ -48,7 +72,13 @@ func (s *ChainHandler) RpcSendaction(ctx context.Context, in *commit.RelayCommit
 			Data:          act.Data,
 		})
 	}
+	bqi.actions = actions[:]
+	s.blockQueue <- bqi
 
-	s.handler(&block, actions)
 	return &commit.RelayCommitReply{Reply: "get Block"}, nil
+}
+
+func (s *ChainHandler) Close() {
+	close(s.blockQueue)
+	s.wg.Wait()
 }

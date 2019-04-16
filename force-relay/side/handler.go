@@ -12,21 +12,10 @@ import (
 
 var lastCommittedBlockNum uint32
 
-type blockHand struct {
-	block   chainhandler.Block
-	actions []chainhandler.Action
-}
-
-var blocksChan chan blockHand
-
 // HandSideBlock handle block from side chain
 func HandSideBlock(block *chainhandler.Block, actions []chainhandler.Action) {
-	act := make([]chainhandler.Action, 0, len(actions))
-	for _, a := range actions {
-		act = append(act, a)
-	}
-	blocksChan <- blockHand{
-		*block, act[:],
+	if handSideBlockImp(block, actions) {
+		time.Sleep(5 * time.Millisecond)
 	}
 }
 
@@ -76,20 +65,4 @@ func handSideBlockImp(block *chainhandler.Block, actions []chainhandler.Action) 
 	}
 
 	return true
-}
-
-func InitCommitter() {
-	blocksChan = make(chan blockHand, 4096)
-}
-
-// StartCommitter start committer gorountinue
-func StartCommitter() {
-	go func() {
-		for {
-			b := <-blocksChan
-			if handSideBlockImp(&b.block, b.actions) {
-				time.Sleep(5 * time.Millisecond)
-			}
-		}
-	}()
 }

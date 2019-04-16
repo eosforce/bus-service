@@ -27,7 +27,6 @@ func startRelayService() {
 	commit.RegisterRelayCommitServer(service,
 		chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
-				seelog.Tracef("hand %d", block.GetNum())
 				relay.HandRelayBlock(block, actions)
 			}))
 	reflection.Register(service)
