@@ -78,14 +78,17 @@ func handSideBlockImp(block *chainhandler.Block, actions []chainhandler.Action) 
 	return true
 }
 
+func InitCommitter() {
+	blocksChan = make(chan blockHand, 4096)
+}
+
 // StartCommitter start committer gorountinue
 func StartCommitter() {
-	blocksChan = make(chan blockHand, 4)
 	go func() {
 		for {
 			b := <-blocksChan
 			if handSideBlockImp(&b.block, b.actions) {
-				time.Sleep(10 * time.Millisecond)
+				time.Sleep(5 * time.Millisecond)
 			}
 		}
 	}()
