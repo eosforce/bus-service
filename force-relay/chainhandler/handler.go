@@ -35,7 +35,7 @@ func NewChainHandler(h HandlerFunc) *ChainHandler {
 				seelog.Warnf("handler chan close")
 				return
 			}
-			seelog.Tracef("process block %d", bi.block.Num)
+			//seelog.Tracef("process block %d %s %s", bi.block.Num, bi.block.Previous, bi.block.ID)
 			ch.handler(&bi.block, bi.actions)
 		}
 	}(res)

@@ -1,10 +1,6 @@
 package side
 
 import (
-	"time"
-
-	"github.com/eosforce/bus-service/force-relay/cfg"
-
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 
 	"github.com/cihub/seelog"
@@ -15,7 +11,7 @@ var lastCommittedBlockNum uint32
 // HandSideBlock handle block from side chain
 func HandSideBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 	if handSideBlockImp(block, actions) {
-		time.Sleep(5 * time.Millisecond)
+		//time.Sleep(5 * time.Millisecond)
 	}
 }
 
@@ -46,23 +42,7 @@ func handSideBlockImp(block *chainhandler.Block, actions []chainhandler.Action) 
 		return false
 	}
 
-	transfers := cfg.GetTransfers()
-
-	for _, t := range transfers {
-		commitAct := newCommitAction(block, t.RelayAccount, actions)
-		for i := 0; i < retryTimes; i++ {
-			if i > 1 {
-				time.Sleep(3500 * time.Millisecond)
-			}
-			_, err = client.PushActions(commitAct)
-			if err != nil {
-				seelog.Errorf("push action error %s", err.Error())
-
-			} else {
-				break
-			}
-		}
-	}
+	commitWorkerMng.OnBlock(block, actions)
 
 	return true
 }

@@ -22,6 +22,7 @@ func startSideService() {
 
 	// frome side need to commit block to relay
 	side.CreateClient(cfg.GetChainCfg("relay"))
+	side.InitCommitWorker(cfg.GetChainCfg("relay"), cfg.GetTransfers())
 	service := grpc.NewServer()
 	commit.RegisterRelayCommitServer(service,
 		chainhandler.NewChainHandler(
