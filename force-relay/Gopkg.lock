@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f273f92885b50ada2793edc3a07d53c6ff6b49106b41880f0d826afa78c4f8a2"
+  digest = "1:1b3e0a2cafd94b6718e05b909f87332faf9df092e8e8821bf0c89f497600e62b"
   name = "github.com/eosforce/goforceio"
   packages = [
     ".",
@@ -20,9 +20,22 @@
     "btcsuite/btcutil/base58",
     "ecc",
     "eoserr",
+    "p2p",
   ]
   pruneopts = "UT"
-  revision = "3b584233ec5d6d33e383c59d0712f2bcad9d354f"
+  revision = "b08fa14dca096082ba9be53187573364ee8be2bd"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0a5c0c917774fab5f70e241899a0bfe4e1badcc0f4c2de4c6a7776546ed24151"
+  name = "github.com/fanyang1988/force-block-ev"
+  packages = [
+    "blockdb",
+    "blockev",
+    "log",
+  ]
+  pruneopts = "UT"
+  revision = "2681b16ce25b741d513d84de1150eb8e5ac43d7b"
 
 [[projects]]
   branch = "master"
@@ -35,21 +48,6 @@
   ]
   pruneopts = "UT"
   revision = "3be20551b6312d4b59647e5db22bf83a0cab9481"
-
-[[projects]]
-  digest = "1:64c2b533ffd17023738c534548ab2455d7f519bc15ed4225145425ed2222448b"
-  name = "github.com/golang/protobuf"
-  packages = [
-    "proto",
-    "protoc-gen-go/descriptor",
-    "ptypes",
-    "ptypes/any",
-    "ptypes/duration",
-    "ptypes/timestamp",
-  ]
-  pruneopts = "UT"
-  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
-  version = "v1.3.1"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -128,104 +126,7 @@
   name = "golang.org/x/crypto"
   packages = ["ripemd160"]
   pruneopts = "UT"
-  revision = "38d8ce5564a5b71b2e3a00553993f1b9a7ae852f"
-
-[[projects]]
-  branch = "master"
-  digest = "1:a7550c619a7f9701bc2f0b2c866668a207cfb693a2834796f723d2c78b514372"
-  name = "golang.org/x/net"
-  packages = [
-    "context",
-    "http/httpguts",
-    "http2",
-    "http2/hpack",
-    "idna",
-    "internal/timeseries",
-    "trace",
-  ]
-  pruneopts = "UT"
-  revision = "eb5bcb51f2a31c7d5141d810b70815c05d9c9146"
-
-[[projects]]
-  branch = "master"
-  digest = "1:cf353a5a9ffb2d6f850e9c773e25388a425a70c270546480427ed069e87b136a"
-  name = "golang.org/x/sys"
-  packages = ["unix"]
-  pruneopts = "UT"
-  revision = "4b34438f7a67ee5f45cc6132e2bad873a20324e9"
-
-[[projects]]
-  digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
-  name = "golang.org/x/text"
-  packages = [
-    "collate",
-    "collate/build",
-    "internal/colltab",
-    "internal/gen",
-    "internal/tag",
-    "internal/triegen",
-    "internal/ucd",
-    "language",
-    "secure/bidirule",
-    "transform",
-    "unicode/bidi",
-    "unicode/cldr",
-    "unicode/norm",
-    "unicode/rangetable",
-  ]
-  pruneopts = "UT"
-  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
-  version = "v0.3.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:c3076e7defee87de1236f1814beb588f40a75544c60121e6eb38b3b3721783e2"
-  name = "google.golang.org/genproto"
-  packages = ["googleapis/rpc/status"]
-  pruneopts = "UT"
-  revision = "64821d5d210748c883cd2b809589555ae4654203"
-
-[[projects]]
-  digest = "1:87d21766dc058648c95ae9f929496931684f576e2fbd7c80e36ab7c07b6896cf"
-  name = "google.golang.org/grpc"
-  packages = [
-    ".",
-    "balancer",
-    "balancer/base",
-    "balancer/roundrobin",
-    "binarylog/grpc_binarylog_v1",
-    "codes",
-    "connectivity",
-    "credentials",
-    "credentials/internal",
-    "encoding",
-    "encoding/proto",
-    "grpclog",
-    "internal",
-    "internal/backoff",
-    "internal/binarylog",
-    "internal/channelz",
-    "internal/envconfig",
-    "internal/grpcrand",
-    "internal/grpcsync",
-    "internal/syscall",
-    "internal/transport",
-    "keepalive",
-    "metadata",
-    "naming",
-    "peer",
-    "reflection",
-    "reflection/grpc_reflection_v1alpha",
-    "resolver",
-    "resolver/dns",
-    "resolver/passthrough",
-    "stats",
-    "status",
-    "tap",
-  ]
-  pruneopts = "UT"
-  revision = "3507fb8e1a5ad030303c106fef3a47c9fdad16ad"
-  version = "v1.19.1"
+  revision = "c05e17bb3b2dca130fc919668a96b4bec9eb9442"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -234,13 +135,12 @@
     "github.com/cihub/seelog",
     "github.com/eosforce/goforceio",
     "github.com/eosforce/goforceio/ecc",
+    "github.com/fanyang1988/force-block-ev/blockdb",
+    "github.com/fanyang1988/force-block-ev/blockev",
+    "github.com/fanyang1988/force-block-ev/log",
     "github.com/fanyang1988/force-go",
     "github.com/fanyang1988/force-go/config",
-    "github.com/golang/protobuf/proto",
     "github.com/pkg/errors",
-    "golang.org/x/net/context",
-    "google.golang.org/grpc",
-    "google.golang.org/grpc/reflection",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

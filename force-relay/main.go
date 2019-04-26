@@ -2,16 +2,17 @@ package main
 
 import (
 	"flag"
+	"runtime"
 	"time"
 
-	"github.com/eosforce/bus-service/force-relay/cfg"
-
 	"github.com/cihub/seelog"
+	"github.com/eosforce/bus-service/force-relay/cfg"
+	"github.com/eosforce/bus-service/force-relay/relay"
+	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/eosforce/goforceio/ecc"
+	"github.com/fanyang1988/force-block-ev/log"
 )
 
-var transferURL = flag.String("url", "0.0.0.0:50051", "transfer service url to listen")
-var relayURL = flag.String("relay-url", "0.0.0.0:50052", "relay service url to listen")
 var configPath = flag.String("cfg", "./config.json", "confg file path")
 var chain = flag.String("chain", "eosforce", "the name of chain")
 var transfer = flag.String("transfer", "eosforce", "the name of transfer")
@@ -24,11 +25,22 @@ func main() {
 	flag.Parse()
 	defer seelog.Flush()
 
+	runtime.GOMAXPROCS(8)
+
+	log.EnableLogging(false)
+
 	err := cfg.LoadCfgs(*configPath)
 	if err != nil {
 		seelog.Errorf("load cfg err by %s", err.Error())
 		return
 	}
+
+	seelog.Infof("dd %s", ecc.PublicKeyPrefixCompat)
+
+	sideChainCfgs, _ := cfg.GetChainCfg("side")
+	relay.CreateSideClient(sideChainCfgs)
+	relayChainCfgs, _ := cfg.GetChainCfg("relay")
+	side.CreateClient(relayChainCfgs)
 
 	go func() {
 		if len(cfg.GetWatchers()) == 0 {

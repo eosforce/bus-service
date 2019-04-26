@@ -29,11 +29,6 @@
         "relayacc": "testc"
     }],
 
-    "watcher": [{
-        "sideacc": "testc",
-        "relayacc": "biosbpc"
-    }],
-
     "relay":{
         "chain":"eosforce",
         "relaycontract":"rs"

@@ -25,3 +25,7 @@ func CreateSideClient(cfg *config.Config) {
 		}
 	}
 }
+
+func Client() *force.Client {
+	return client
+}

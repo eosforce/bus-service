@@ -1,37 +1,50 @@
 package main
 
 import (
-	"net"
+	"errors"
+
+	"github.com/cihub/seelog"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
+	"github.com/eosforce/bus-service/force-relay/relay"
+	"github.com/fanyang1988/force-block-ev/blockdb"
+	"github.com/fanyang1988/force-block-ev/blockev"
 
-	"github.com/cihub/seelog"
-	commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
 	"github.com/eosforce/bus-service/force-relay/side"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 func startSideService() {
-	lis, err := net.Listen("tcp", *transferURL)
+	// frome side need to commit block to relay
+	chainCfgs, _ := cfg.GetChainCfg("relay")
+	_, p2ps := cfg.GetChainCfg("side")
+	side.InitCommitWorker(chainCfgs, cfg.GetTransfers())
+
+	// for p2p chain id
+	info, err := relay.Client().GetInfo()
 	if err != nil {
-		seelog.Errorf("failed to listen: %v", err)
-		return
+		panic(errors.New("get info err"))
 	}
 
-	// frome side need to commit block to relay
-	side.CreateClient(cfg.GetChainCfg("relay"))
-	side.InitCommitWorker(cfg.GetChainCfg("relay"), cfg.GetTransfers())
-	service := grpc.NewServer()
-	commit.RegisterRelayCommitServer(service,
-		chainhandler.NewChainHandler(
+	lastCommitted, err := side.GetLastCommittedBlock()
+	if err != nil {
+		panic(errors.New("get info err"))
+	}
+
+	lastNum := lastCommitted.GetNum()
+	if lastNum > 3 {
+		lastNum -= 2
+	}
+
+	seelog.Infof("start %d block to process", lastNum)
+
+	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), 1, p2ps)
+	p2pPeers.RegisterHandler(blockev.NewP2PMsgHandler(&handlerImp{
+		verifier: blockdb.NewFastBlockVerifier(p2ps, chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
 				side.HandSideBlock(block, actions)
-			}))
-	reflection.Register(service)
-	if err := service.Serve(lis); err != nil {
-		seelog.Errorf("failed to serve: %v", err.Error())
-	}
+			})),
+	}))
+	p2pPeers.Start()
 
 }

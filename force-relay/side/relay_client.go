@@ -33,6 +33,10 @@ func CreateClient(cfg *config.Config) {
 	}
 }
 
+func Client() *force.Client {
+	return client
+}
+
 type lastCommitBlockInfo struct {
 	Chain eos.Name           `json:"chain"`
 	Last  chainhandler.Block `json:"last"`

@@ -25,17 +25,22 @@ var relayCfg RelayCfg
 
 // ChainCfgs cfg for each chain
 var chainCfgs map[string]*config.Config
+var chainP2PCfgs map[string][]string
 
 var transfers []Relayer
 var watchers []Relayer
 
 // GetChainCfg get chain cfg
-func GetChainCfg(name string) *config.Config {
+func GetChainCfg(name string) (*config.Config, []string) {
 	c, ok := chainCfgs[name]
 	if !ok || c == nil {
 		panic(errors.New("no find chain cfg "))
 	}
-	return c
+	p, ok := chainP2PCfgs[name]
+	if !ok {
+		panic(errors.New("no find chain p2p cfg "))
+	}
+	return c, p
 }
 
 // GetTransfers get transfers
@@ -58,6 +63,7 @@ func LoadCfgs(path string) error {
 	cfgInFile := struct {
 		Chains []struct {
 			Name string            `json:"name"`
+			P2P  []string          `json:"p2p"`
 			Cfg  config.ConfigData `json:"cfg"`
 		} `json:"chains"`
 		Transfer []struct {
@@ -85,6 +91,12 @@ func LoadCfgs(path string) error {
 			return err
 		}
 		chainCfgs[c.Name] = &cc
+	}
+
+	chainP2PCfgs = make(map[string][]string)
+	for _, c := range cfgInFile.Chains {
+		seelog.Tracef("load p2p cfg %s -> %v", c.Name, c.P2P)
+		chainP2PCfgs[c.Name] = c.P2P
 	}
 
 	for _, t := range cfgInFile.Transfer {
