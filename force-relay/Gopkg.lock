@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1b3e0a2cafd94b6718e05b909f87332faf9df092e8e8821bf0c89f497600e62b"
+  digest = "1:cee463d9c7428a6cfaead14816aad6fc066936b5e710121c1106c6e85cccfc74"
   name = "github.com/eosforce/goforceio"
   packages = [
     ".",
@@ -23,11 +23,11 @@
     "p2p",
   ]
   pruneopts = "UT"
-  revision = "b08fa14dca096082ba9be53187573364ee8be2bd"
+  revision = "aaf7221564db2bfb705740a111f8d9d05f410fe4"
 
 [[projects]]
   branch = "master"
-  digest = "1:0a5c0c917774fab5f70e241899a0bfe4e1badcc0f4c2de4c6a7776546ed24151"
+  digest = "1:b2999305d02995e4a4aaa2fd54c5e573e070ffafd5478e07003ec5f871c1be38"
   name = "github.com/fanyang1988/force-block-ev"
   packages = [
     "blockdb",
@@ -35,7 +35,7 @@
     "log",
   ]
   pruneopts = "UT"
-  revision = "2681b16ce25b741d513d84de1150eb8e5ac43d7b"
+  revision = "e2f38e2f7c2044ff9d5cbf71f5795103284dd5f6"
 
 [[projects]]
   branch = "master"

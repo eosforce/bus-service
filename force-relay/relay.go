@@ -23,7 +23,7 @@ func startRelayService() {
 		panic(errors.New("get info err"))
 	}
 
-	p2pPeers := blockev.NewP2PPeers("side", info.ChainID.String(), 1, p2ps)
+	p2pPeers := blockev.NewP2PPeers("side", info.ChainID.String(), nil, p2ps)
 	p2pPeers.RegisterHandler(blockev.NewP2PMsgHandler(&handlerImp{
 		verifier: blockdb.NewFastBlockVerifier(p2ps, chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {

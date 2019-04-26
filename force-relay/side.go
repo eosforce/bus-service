@@ -36,9 +36,14 @@ func startSideService() {
 		lastNum -= 2
 	}
 
-	seelog.Infof("start %d block to process", lastNum)
+	lastBlock, err := relay.Client().GetBlockByNum(lastNum)
+	if err != nil {
+		panic(seelog.Errorf("err by %s", err.Error()))
+	}
 
-	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), 1, p2ps)
+	seelog.Infof("start block to process %v", lastBlock)
+
+	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), &lastBlock.BlockHeader, p2ps)
 	p2pPeers.RegisterHandler(blockev.NewP2PMsgHandler(&handlerImp{
 		verifier: blockdb.NewFastBlockVerifier(p2ps, chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
