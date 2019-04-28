@@ -6,13 +6,12 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/eosforce/goforceio/p2p"
-
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/eosforce/bus-service/force-relay/relay"
 	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/eosforce/goforceio/ecc"
+	"github.com/eosforce/goforceio/p2p"
 	blockevlog "github.com/fanyang1988/force-block-ev/log"
 )
 
@@ -20,7 +19,7 @@ var configPath = flag.String("cfg", "./config.json", "config file path")
 var isDebug = flag.Bool("d", false, "run in debug mode")
 
 func init() {
-	ecc.PublicKeyPrefixCompat = "FOSC"
+	ecc.PublicKeyPrefixCompat = "CDX"
 }
 
 func main() {

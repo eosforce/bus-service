@@ -27,7 +27,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0304099ea5c4b0dc401485d55f229d649bfa1da733f4df170e203a19f85964a2"
+  digest = "1:3ae9046500859eb14d803c408718480b7967a9aeb2f1e50e4614f640e881037d"
   name = "github.com/fanyang1988/force-block-ev"
   packages = [
     "blockdb",
@@ -35,7 +35,7 @@
     "log",
   ]
   pruneopts = "UT"
-  revision = "b7e4c885cdc456e86e63f37617613ef76565e200"
+  revision = "3bff8dd77621593b58217592fb7294c12de17c79"
 
 [[projects]]
   branch = "master"
@@ -143,6 +143,7 @@
     "github.com/cihub/seelog",
     "github.com/eosforce/goforceio",
     "github.com/eosforce/goforceio/ecc",
+    "github.com/eosforce/goforceio/p2p",
     "github.com/fanyang1988/force-block-ev/blockdb",
     "github.com/fanyang1988/force-block-ev/blockev",
     "github.com/fanyang1988/force-block-ev/log",
