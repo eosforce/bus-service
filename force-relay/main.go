@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"runtime"
 	"time"
 
@@ -13,9 +14,8 @@ import (
 	"github.com/fanyang1988/force-block-ev/log"
 )
 
-var configPath = flag.String("cfg", "./config.json", "confg file path")
-var chain = flag.String("chain", "eosforce", "the name of chain")
-var transfer = flag.String("transfer", "eosforce", "the name of transfer")
+var configPath = flag.String("cfg", "./config.json", "config file path")
+var isDebug = flag.Bool("d", false, "run in debug mode")
 
 func init() {
 	ecc.PublicKeyPrefixCompat = "FOSC"
@@ -23,13 +23,18 @@ func init() {
 
 func main() {
 	flag.Parse()
-	logger.EnableLogging(false)
+	logger.EnableLogging(*isDebug)
 
-	defer logger.Logger().Sync()
+	defer func() {
+		err := logger.Logger().Sync()
+		if err != nil {
+			fmt.Printf("logger sync err by %s", err.Error())
+		}
+	}()
 
 	runtime.GOMAXPROCS(8)
 
-	log.EnableLogging(false)
+	log.EnableLogging(*isDebug)
 
 	err := cfg.LoadCfgs(*configPath)
 	if err != nil {
@@ -39,10 +44,13 @@ func main() {
 
 	logger.Sugar().Infof("dd %s", ecc.PublicKeyPrefixCompat)
 
-	sideChainCfgs, _ := cfg.GetChainCfg("side")
-	relay.CreateSideClient(sideChainCfgs)
-	relayChainCfgs, _ := cfg.GetChainCfg("relay")
-	side.CreateClient(relayChainCfgs)
+	sideChainCfg, _ := cfg.GetChainCfg("side")
+	sideChainCfg.IsDebug = *isDebug
+	relay.CreateSideClient(sideChainCfg)
+
+	relayChainCfg, _ := cfg.GetChainCfg("relay")
+	relayChainCfg.IsDebug = *isDebug
+	side.CreateClient(relayChainCfg)
 
 	go func() {
 		if len(cfg.GetWatchers()) == 0 {
