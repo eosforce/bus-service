@@ -3,9 +3,9 @@ package chainhandler
 import (
 	"sync"
 
-	"github.com/cihub/seelog"
-
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
+	"go.uber.org/zap"
 )
 
 type HandlerFunc func(block *Block, actions []Action)
@@ -25,14 +25,13 @@ func NewChainHandler(h HandlerFunc) *ChainHandler {
 	res.wg.Add(1)
 	go func(ch *ChainHandler) {
 		defer ch.wg.Done()
-		seelog.Infof("start chain handler")
+		logger.Logger().Info("start chain handler")
 		for {
 			bi, ok := <-ch.blockQueue
 			if !ok {
-				seelog.Warnf("handler chan close")
+				logger.Logger().Error("handler chan close")
 				return
 			}
-			//seelog.Tracef("process block %d %s %s", bi.block.Num, bi.block.Previous, bi.block.ID)
 			ch.handler(&bi.block, bi.actions)
 		}
 	}(res)
@@ -41,7 +40,9 @@ func NewChainHandler(h HandlerFunc) *ChainHandler {
 }
 
 func (c *ChainHandler) OnBlock(blockNum uint32, blockID eos.Checksum256, block *eos.SignedBlock) error {
-	seelog.Tracef("onblock %d %s", blockNum, blockID.String())
+	logger.Logger().Debug("on block",
+		zap.Uint32("num", blockNum),
+		zap.String("id", blockID.String()))
 	var bqi blockQueueItem
 	bqi.block = Block{
 		Producer:         block.Producer,

@@ -3,8 +3,7 @@ package cfg
 import (
 	"errors"
 
-	"github.com/cihub/seelog"
-
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
 	"github.com/fanyang1988/force-go/config"
 )
@@ -86,7 +85,7 @@ func LoadCfgs(path string) error {
 	for _, c := range cfgInFile.Chains {
 		cc := config.Config{}
 		err := cc.Parse(&c.Cfg)
-		seelog.Tracef("load cfg %v", cc)
+		logger.Debugf("load cfg %v", cc)
 		if err != nil {
 			return err
 		}
@@ -95,7 +94,7 @@ func LoadCfgs(path string) error {
 
 	chainP2PCfgs = make(map[string][]string)
 	for _, c := range cfgInFile.Chains {
-		seelog.Tracef("load p2p cfg %s -> %v", c.Name, c.P2P)
+		logger.Debugf("load p2p cfg %s -> %v", c.Name, c.P2P)
 		chainP2PCfgs[c.Name] = c.P2P
 	}
 
