@@ -5,8 +5,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/cihub/seelog"
 	"github.com/eosforce/bus-service/force-relay/cfg"
+	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/eosforce/bus-service/force-relay/relay"
 	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/eosforce/goforceio/ecc"
@@ -23,7 +23,9 @@ func init() {
 
 func main() {
 	flag.Parse()
-	defer seelog.Flush()
+	logger.EnableLogging(false)
+
+	defer logger.Logger().Sync()
 
 	runtime.GOMAXPROCS(8)
 
@@ -31,11 +33,11 @@ func main() {
 
 	err := cfg.LoadCfgs(*configPath)
 	if err != nil {
-		seelog.Errorf("load cfg err by %s", err.Error())
+		logger.Sugar().Errorf("load cfg err by %s", err.Error())
 		return
 	}
 
-	seelog.Infof("dd %s", ecc.PublicKeyPrefixCompat)
+	logger.Sugar().Infof("dd %s", ecc.PublicKeyPrefixCompat)
 
 	sideChainCfgs, _ := cfg.GetChainCfg("side")
 	relay.CreateSideClient(sideChainCfgs)
@@ -44,19 +46,19 @@ func main() {
 
 	go func() {
 		if len(cfg.GetWatchers()) == 0 {
-			seelog.Infof("no need start relay")
+			logger.Sugar().Infof("no need start relay")
 			return
 		}
-		seelog.Infof("start relay service")
+		logger.Sugar().Infof("start relay service")
 		startRelayService()
 	}()
 
 	go func() {
 		if len(cfg.GetTransfers()) == 0 {
-			seelog.Infof("no need start side")
+			logger.Sugar().Infof("no need start side")
 			return
 		}
-		seelog.Infof("start side service")
+		logger.Sugar().Infof("start side service")
 		startSideService()
 	}()
 

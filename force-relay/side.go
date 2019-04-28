@@ -2,16 +2,14 @@ package main
 
 import (
 	"errors"
-
-	"github.com/cihub/seelog"
+	"fmt"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/relay"
+	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/fanyang1988/force-block-ev/blockdb"
 	"github.com/fanyang1988/force-block-ev/blockev"
-
-	"github.com/eosforce/bus-service/force-relay/side"
 )
 
 func startSideService() {
@@ -38,10 +36,8 @@ func startSideService() {
 
 	lastBlock, err := relay.Client().GetBlockByNum(lastNum)
 	if err != nil {
-		panic(seelog.Errorf("err by %s", err.Error()))
+		panic(fmt.Errorf("err by %s", err.Error()))
 	}
-
-	seelog.Infof("start block to process %v", lastBlock)
 
 	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), &lastBlock.BlockHeader, p2ps)
 	p2pPeers.RegisterHandler(blockev.NewP2PMsgHandler(&handlerImp{

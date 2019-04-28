@@ -3,14 +3,12 @@ package main
 import (
 	"errors"
 
-	"github.com/eosforce/bus-service/force-relay/chainhandler"
-	"github.com/eosforce/bus-service/force-relay/side"
-
 	"github.com/eosforce/bus-service/force-relay/cfg"
+	"github.com/eosforce/bus-service/force-relay/chainhandler"
+	"github.com/eosforce/bus-service/force-relay/relay"
+	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/fanyang1988/force-block-ev/blockdb"
 	"github.com/fanyang1988/force-block-ev/blockev"
-
-	"github.com/eosforce/bus-service/force-relay/relay"
 )
 
 func startRelayService() {
