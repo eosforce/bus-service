@@ -27,7 +27,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b2999305d02995e4a4aaa2fd54c5e573e070ffafd5478e07003ec5f871c1be38"
+  digest = "1:0304099ea5c4b0dc401485d55f229d649bfa1da733f4df170e203a19f85964a2"
   name = "github.com/fanyang1988/force-block-ev"
   packages = [
     "blockdb",
@@ -35,7 +35,7 @@
     "log",
   ]
   pruneopts = "UT"
-  revision = "e2f38e2f7c2044ff9d5cbf71f5795103284dd5f6"
+  revision = "b7e4c885cdc456e86e63f37617613ef76565e200"
 
 [[projects]]
   branch = "master"

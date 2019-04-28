@@ -11,7 +11,7 @@ import (
 	"github.com/eosforce/bus-service/force-relay/relay"
 	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/eosforce/goforceio/ecc"
-	"github.com/fanyang1988/force-block-ev/log"
+	blockevlog "github.com/fanyang1988/force-block-ev/log"
 )
 
 var configPath = flag.String("cfg", "./config.json", "config file path")
@@ -24,6 +24,7 @@ func init() {
 func main() {
 	flag.Parse()
 	logger.EnableLogging(*isDebug)
+	blockevlog.SetLogger(logger.Logger())
 
 	defer func() {
 		err := logger.Logger().Sync()
@@ -34,15 +35,11 @@ func main() {
 
 	runtime.GOMAXPROCS(8)
 
-	log.EnableLogging(*isDebug)
-
 	err := cfg.LoadCfgs(*configPath)
 	if err != nil {
 		logger.Sugar().Errorf("load cfg err by %s", err.Error())
 		return
 	}
-
-	logger.Sugar().Infof("dd %s", ecc.PublicKeyPrefixCompat)
 
 	sideChainCfg, _ := cfg.GetChainCfg("side")
 	sideChainCfg.IsDebug = *isDebug

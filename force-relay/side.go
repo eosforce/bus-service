@@ -36,6 +36,11 @@ func startSideService() {
 		lastNum -= 2
 	}
 
+	if lastNum == 0 {
+		// no committed
+		lastNum = 1
+	}
+
 	lastBlock, err := relay.Client().GetBlockByNum(lastNum)
 	if err != nil {
 		panic(errors.Errorf("get block num %d err by %s", lastNum, err.Error()))
