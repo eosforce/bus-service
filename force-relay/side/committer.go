@@ -130,19 +130,19 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 
 	for i := 0; i < retryTimes; i++ {
 		if i > 1 {
-			time.Sleep(50 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
 		_, err := c.client.PushActions(actions...)
 
 		if err != nil {
 			logger.LogError("commit action err", err)
 			if strings.Contains(err.Error(), "Transaction took too long") {
-				logger.Warnf("need wait chain")
-				time.Sleep(5 * time.Second)
+				logger.Warnf("need wait chain err by took too long")
+				time.Sleep(8 * time.Second)
 			}
 
 			if strings.Contains(err.Error(), "RAM") {
-				logger.Warnf("need wait other chain")
+				logger.Warnf("need wait other chain err by RAM")
 				time.Sleep(8 * time.Second)
 			}
 		} else {

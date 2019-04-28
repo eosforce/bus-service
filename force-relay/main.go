@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/eosforce/goforceio/p2p"
+
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/eosforce/bus-service/force-relay/relay"
@@ -25,6 +27,9 @@ func main() {
 	flag.Parse()
 	logger.EnableLogging(*isDebug)
 	blockevlog.SetLogger(logger.Logger())
+	if *isDebug {
+		p2p.EnableP2PLogging()
+	}
 
 	defer func() {
 		err := logger.Logger().Sync()
@@ -33,7 +38,7 @@ func main() {
 		}
 	}()
 
-	runtime.GOMAXPROCS(8)
+	runtime.GOMAXPROCS(2)
 
 	err := cfg.LoadCfgs(*configPath)
 	if err != nil {

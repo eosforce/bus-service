@@ -41,12 +41,12 @@ func startSideService() {
 		lastNum = 1
 	}
 
-	lastBlock, err := relay.Client().GetBlockByNum(lastNum)
+	_, err = relay.Client().GetBlockByNum(lastNum)
 	if err != nil {
 		panic(errors.Errorf("get block num %d err by %s", lastNum, err.Error()))
 	}
 
-	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), &lastBlock.BlockHeader, p2ps)
+	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), nil, p2ps)
 	p2pPeers.RegisterHandler(blockev.NewP2PMsgHandler(&handlerImp{
 		verifier: blockdb.NewFastBlockVerifier(p2ps, chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
