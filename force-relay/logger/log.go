@@ -21,7 +21,7 @@ func newLogger(production bool) (l *zap.Logger) {
 
 // EnableLogging Enable logger for force block ev
 func EnableLogging(production bool) {
-	logger = buildLogger("./force")
+	logger = buildLogger("./force_relay")
 }
 
 // Logger get logger
@@ -45,14 +45,14 @@ func buildLogger(logPath string) *zap.Logger {
 
 	topicDebugging := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   logPath + ".log",
-		MaxSize:    50, // megabytes
+		MaxSize:    500, // megabytes
 		MaxBackups: 32,
 		MaxAge:     7, // days
 	})
 
 	topicErrors := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   logPath + ".error.log",
-		MaxSize:    50, // megabytes
+		MaxSize:    500, // megabytes
 		MaxBackups: 64,
 		MaxAge:     7, // days
 	})
