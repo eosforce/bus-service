@@ -1,10 +1,11 @@
 package side
 
 import (
-	"github.com/cihub/seelog"
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
+	"go.uber.org/zap"
 )
 
 type commitParam struct {
@@ -15,7 +16,11 @@ type commitParam struct {
 }
 
 func newCommitAction(b *chainhandler.Block, transfer eos.PermissionLevel, actionsToCommit []chainhandler.Action) *eos.Action {
-	seelog.Infof("commit block %d %v %d %v", b.GetNum(), b.ID, len(actionsToCommit), b.Previous)
+	logger.Logger().Info("commit block",
+		zap.Uint32("num", b.GetNum()),
+		zap.String("id", b.ID.String()),
+		zap.Int("action", len(actionsToCommit)),
+		zap.String("previous", b.Previous.String()))
 	return &eos.Action{
 		Account: eos.AN("force.relay"),
 		Name:    eos.ActN("commit"),

@@ -4,12 +4,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cihub/seelog"
-
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
-	force "github.com/fanyang1988/force-go"
+	"github.com/fanyang1988/force-go"
 	"github.com/fanyang1988/force-go/config"
 )
 
@@ -63,7 +62,7 @@ func (c *commitWorker) Start(cfg *config.Config) {
 	for {
 		client, err := force.NewClient(cfg)
 		if err != nil {
-			seelog.Warnf("create client error by %s , need retry", err.Error())
+			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
 		} else {
 			c.client = client
@@ -126,7 +125,7 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 		})
 	}
 
-	seelog.Tracef("commit %s blocks num : %d -> %d",
+	logger.Debugf("commit %s blocks num : %d -> %d",
 		string(c.committer.Actor), cps[0].Block.Num, cps[len(cps)-1].Block.Num)
 
 	for i := 0; i < retryTimes; i++ {
@@ -136,14 +135,14 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 		_, err := c.client.PushActions(actions...)
 
 		if err != nil {
-			seelog.Warnf("commit action err by %s", err.Error())
+			logger.LogError("commit action err", err)
 			if strings.Contains(err.Error(), "Transaction took too long") {
-				seelog.Warnf("need wait chain")
+				logger.Warnf("need wait chain")
 				time.Sleep(5 * time.Second)
 			}
 
 			if strings.Contains(err.Error(), "RAM") {
-				seelog.Warnf("need wait other chain")
+				logger.Warnf("need wait other chain")
 				time.Sleep(8 * time.Second)
 			}
 		} else {

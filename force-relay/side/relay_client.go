@@ -3,16 +3,14 @@ package side
 import (
 	"time"
 
-	"github.com/cihub/seelog"
-
 	"github.com/eosforce/bus-service/force-relay/cfg"
-
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
-
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
 	force "github.com/fanyang1988/force-go"
 	"github.com/fanyang1988/force-go/config"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 )
 
 // client client to force relay chain
@@ -22,10 +20,13 @@ var client *force.Client
 func CreateClient(cfg *config.Config) {
 	for {
 		var err error
-		seelog.Tracef("cfg %v", *cfg)
+		logger.Logger().Debug("create client cfg",
+			zap.String("url", cfg.URL),
+			zap.String("chainID", cfg.ChainID.String()),
+			zap.Bool("isDebug", cfg.IsDebug))
 		client, err = force.NewClient(cfg)
 		if err != nil {
-			seelog.Warnf("create client error by %s , need retry", err.Error())
+			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
 		} else {
 			return
