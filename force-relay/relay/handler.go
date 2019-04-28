@@ -3,9 +3,9 @@ package relay
 import (
 	"fmt"
 
-	"github.com/cihub/seelog"
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
 )
 
@@ -18,7 +18,7 @@ type Destroy struct {
 }
 
 func HandRelayBlock(block *chainhandler.Block, actions []chainhandler.Action) {
-	seelog.Debugf("on block from relay %d", block.GetNum())
+	logger.Debugf("on block from relay %d", block.GetNum())
 	for _, act := range actions {
 		if act.Account != eos.AN("relay.token") || act.Name != eos.ActN("destroy") {
 			continue
@@ -27,7 +27,7 @@ func HandRelayBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 		var actData Destroy
 		err := eos.UnmarshalBinary(act.Data, &actData)
 		if err != nil {
-			seelog.Errorf("UnmarshalBinary act err by %s", err.Error())
+			logger.LogError("UnmarshalBinary act err", err)
 			continue
 		}
 
@@ -36,7 +36,7 @@ func HandRelayBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 }
 
 func onTokenReturnSideChain(block *chainhandler.Block, act *Destroy) {
-	seelog.Debugf("on return in block %d : %s %v by %v in %s",
+	logger.Debugf("on return in block %d : %s %v by %v in %s",
 		block.GetNum(), act.Chain, act.From, act.Quantity, act.Memo)
 
 	num = num + 1

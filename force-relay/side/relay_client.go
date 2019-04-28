@@ -20,7 +20,7 @@ var client *force.Client
 func CreateClient(cfg *config.Config) {
 	for {
 		var err error
-		logger.Logger().Debug("create client cfg",
+		logger.Logger().Info("create client cfg",
 			zap.String("url", cfg.URL),
 			zap.String("chainID", cfg.ChainID.String()),
 			zap.Bool("isDebug", cfg.IsDebug))
