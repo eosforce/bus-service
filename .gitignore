@@ -6,3 +6,5 @@ force-relay/force-relay
 force-relay/\.idea/
 
 *.log
+
+force-relay/config\.transfer\.json

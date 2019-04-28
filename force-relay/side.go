@@ -1,8 +1,8 @@
 package main
 
 import (
-	"errors"
-	"fmt"
+	"github.com/eosforce/bus-service/force-relay/logger"
+	"github.com/pkg/errors"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
@@ -26,8 +26,10 @@ func startSideService() {
 
 	lastCommitted, err := side.GetLastCommittedBlock()
 	if err != nil {
-		panic(errors.New("get info err"))
+		panic(errors.New("GetLastCommittedBlock info err"))
 	}
+
+	logger.Debugf("get last committed block %v", lastCommitted)
 
 	lastNum := lastCommitted.GetNum()
 	if lastNum > 3 {
@@ -36,7 +38,7 @@ func startSideService() {
 
 	lastBlock, err := relay.Client().GetBlockByNum(lastNum)
 	if err != nil {
-		panic(fmt.Errorf("err by %s", err.Error()))
+		panic(errors.Errorf("get block num %d err by %s", lastNum, err.Error()))
 	}
 
 	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), &lastBlock.BlockHeader, p2ps)
