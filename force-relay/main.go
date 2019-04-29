@@ -46,11 +46,9 @@ func main() {
 	}
 
 	sideChainCfg, _ := cfg.GetChainCfg("side")
-	sideChainCfg.IsDebug = *isDebug
 	relay.CreateSideClient(sideChainCfg)
 
 	relayChainCfg, _ := cfg.GetChainCfg("relay")
-	relayChainCfg.IsDebug = *isDebug
 	side.CreateClient(relayChainCfg)
 
 	go func() {

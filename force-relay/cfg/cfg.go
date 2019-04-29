@@ -23,14 +23,14 @@ type RelayCfg struct {
 var relayCfg RelayCfg
 
 // ChainCfgs cfg for each chain
-var chainCfgs map[string]*config.Config
+var chainCfgs map[string]*config.ConfigData
 var chainP2PCfgs map[string][]string
 
 var transfers []Relayer
 var watchers []Relayer
 
 // GetChainCfg get chain cfg
-func GetChainCfg(name string) (*config.Config, []string) {
+func GetChainCfg(name string) (*config.ConfigData, []string) {
 	c, ok := chainCfgs[name]
 	if !ok || c == nil {
 		panic(errors.New("no find chain cfg "))
@@ -81,15 +81,9 @@ func LoadCfgs(path string) error {
 		return err
 	}
 
-	chainCfgs = make(map[string]*config.Config)
+	chainCfgs = make(map[string]*config.ConfigData)
 	for _, c := range cfgInFile.Chains {
-		cc := config.Config{}
-		err := cc.Parse(&c.Cfg)
-		logger.Debugf("load cfg %v", cc)
-		if err != nil {
-			return err
-		}
-		chainCfgs[c.Name] = &cc
+		chainCfgs[c.Name] = &c.Cfg
 	}
 
 	chainP2PCfgs = make(map[string][]string)

@@ -10,6 +10,36 @@
   version = "v2.6"
 
 [[projects]]
+  digest = "1:b5583253b6a691a3d223028bd3029b1be8a9cbd0f2dad870e9953f5c8c6cc1e0"
+  name = "github.com/eoscanada/eos-go"
+  packages = [
+    ".",
+    "btcsuite/btcd/btcec",
+    "btcsuite/btcutil",
+    "btcsuite/btcutil/base58",
+    "ecc",
+    "eoserr",
+  ]
+  pruneopts = "UT"
+  revision = "dc31757533135f3380a5dd5143531eef82fdbeff"
+  version = "v0.8.11"
+
+[[projects]]
+  branch = "master"
+  digest = "1:d6bc8f74c267a5738e0c20cc0d465d9a633a771f077721caae1be64080657616"
+  name = "github.com/eosforce/goeosforce"
+  packages = [
+    ".",
+    "btcsuite/btcd/btcec",
+    "btcsuite/btcutil",
+    "btcsuite/btcutil/base58",
+    "ecc",
+    "eoserr",
+  ]
+  pruneopts = "UT"
+  revision = "2f03154bca8f1b9758f34aa2fc249357630a58fd"
+
+[[projects]]
   branch = "master"
   digest = "1:cee463d9c7428a6cfaead14816aad6fc066936b5e710121c1106c6e85cccfc74"
   name = "github.com/eosforce/goforceio"
@@ -39,16 +69,18 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8796335353914d7a65510f2583b825caa8062b3e561b5d95f76a37b43bdd64fd"
+  digest = "1:2b1416d13847a796afdf5248293bade8e8725380711d77c7ebc2869e23e792e5"
   name = "github.com/fanyang1988/force-go"
   packages = [
     ".",
     "config",
+    "eosforce",
+    "eosio",
     "forceio",
     "types",
   ]
   pruneopts = "UT"
-  revision = "babbeec3d3bef606b0c1f845ee09b303ef4f2dcb"
+  revision = "70e560ca188ff04f87de7515e40b8cd446ff9cb0"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -91,12 +123,12 @@
   version = "v1.0.4"
 
 [[projects]]
-  digest = "1:3c1a69cdae3501bf75e76d0d86dc6f2b0a7421bc205c0cb7b96b19eed464a34d"
+  digest = "1:777e729b475d3895c7229552aa10076f0d177daf37c0a72258006d046d329960"
   name = "go.uber.org/atomic"
   packages = ["."]
   pruneopts = "UT"
-  revision = "1ea20fb1cbb1cc08cbd0d913a96dead89aa18289"
-  version = "v1.3.2"
+  revision = "4e336646b2ef9fc6e47be8e21594178f98e5ebcf"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:60bf2a5e347af463c42ed31a493d817f8a72f102543060ed992754e689805d1a"

@@ -30,7 +30,7 @@ type commitWorkers struct {
 	cws []*commitWorker
 }
 
-func newCommitWorkers(clientCfg *config.Config, committers []cfg.Relayer) *commitWorkers {
+func newCommitWorkers(clientCfg *config.ConfigData, committers []cfg.Relayer) *commitWorkers {
 	res := &commitWorkers{
 		cws: make([]*commitWorker, 0, len(committers)),
 	}
@@ -47,7 +47,7 @@ func newCommitWorkers(clientCfg *config.Config, committers []cfg.Relayer) *commi
 
 var commitWorkerMng *commitWorkers
 
-func InitCommitWorker(clientCfg *config.Config, committers []cfg.Relayer) {
+func InitCommitWorker(clientCfg *config.ConfigData, committers []cfg.Relayer) {
 	commitWorkerMng = newCommitWorkers(clientCfg, committers)
 }
 
@@ -57,7 +57,7 @@ func (c *commitWorkers) OnBlock(block *chainhandler.Block, actions []chainhandle
 	}
 }
 
-func (c *commitWorker) Start(cfg *config.Config) {
+func (c *commitWorker) Start(cfg *config.ConfigData) {
 	c.works = make(chan commitParam, 4096)
 	for {
 		client, err := force.NewClient(force.FORCEIO, cfg)

@@ -15,13 +15,12 @@ import (
 var client types.ClientInterface
 
 // CreateSideClient create client to force side chain
-func CreateSideClient(cfg *config.Config) {
+func CreateSideClient(cfg *config.ConfigData) {
 	for {
 		var err error
 		logger.Logger().Info("create client cfg",
 			zap.String("url", cfg.URL),
-			zap.String("chainID", cfg.ChainID.String()),
-			zap.Bool("isDebug", cfg.IsDebug))
+			zap.String("chainID", cfg.ChainID))
 		client, err = force.NewClient(force.FORCEIO, cfg)
 		if err != nil {
 			logger.LogError("create client error, need retry", err)
