@@ -3,18 +3,21 @@ package side
 import (
 	"time"
 
+	"github.com/fanyang1988/force-go/types"
+
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
 	force "github.com/fanyang1988/force-go"
 	"github.com/fanyang1988/force-go/config"
+	forceio "github.com/fanyang1988/force-go/forceio"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
 // client client to force relay chain
-var client *force.Client
+var client types.ClientInterface
 
 // CreateClient create client to force relay chain
 func CreateClient(cfg *config.Config) {
@@ -24,7 +27,7 @@ func CreateClient(cfg *config.Config) {
 			zap.String("url", cfg.URL),
 			zap.String("chainID", cfg.ChainID.String()),
 			zap.Bool("isDebug", cfg.IsDebug))
-		client, err = force.NewClient(cfg)
+		client, err = force.NewClient(force.FORCEIO, cfg)
 		if err != nil {
 			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
@@ -34,7 +37,7 @@ func CreateClient(cfg *config.Config) {
 	}
 }
 
-func Client() *force.Client {
+func Client() types.ClientInterface {
 	return client
 }
 
@@ -51,7 +54,9 @@ func GetLastCommittedBlock() (*chainhandler.Block, error) {
 		Table: "relaystat",
 	}
 
-	res, err := client.GetTableRows(req)
+	forceioClient := client.(*forceio.API)
+
+	res, err := forceioClient.GetTableRows(req)
 	if err != nil {
 		return nil, err
 	}

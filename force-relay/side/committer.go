@@ -7,9 +7,9 @@ import (
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
-	eos "github.com/eosforce/goforceio"
 	"github.com/fanyang1988/force-go"
 	"github.com/fanyang1988/force-go/config"
+	"github.com/fanyang1988/force-go/types"
 )
 
 const (
@@ -21,9 +21,9 @@ const (
 )
 
 type commitWorker struct {
-	committer eos.PermissionLevel
+	committer types.PermissionLevel
 	works     chan commitParam
-	client    *force.Client
+	client    types.ClientInterface
 }
 
 type commitWorkers struct {
@@ -60,7 +60,7 @@ func (c *commitWorkers) OnBlock(block *chainhandler.Block, actions []chainhandle
 func (c *commitWorker) Start(cfg *config.Config) {
 	c.works = make(chan commitParam, 4096)
 	for {
-		client, err := force.NewClient(cfg)
+		client, err := force.NewClient(force.FORCEIO, cfg)
 		if err != nil {
 			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
@@ -77,8 +77,8 @@ func (c *commitWorker) Start(cfg *config.Config) {
 
 func (c *commitWorker) OnBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 	c.works <- commitParam{
-		Name:     eos.Name(cfg.GetRelayCfg().Chain),
-		Transfer: c.committer.Actor,
+		Name:     c.client.Name(cfg.GetRelayCfg().Chain),
+		Transfer: c.client.Name(c.committer.Actor),
 		Block:    *block,
 		Actions:  actions,
 	}
@@ -112,16 +112,16 @@ func (c *commitWorker) Loop() {
 }
 
 func (c *commitWorker) CommitTrx(cps []commitParam) {
-	actions := make([]*eos.Action, 0, len(cps))
+	actions := make([]*types.Action, 0, len(cps))
 
 	for _, cp := range cps {
-		actions = append(actions, &eos.Action{
-			Account: eos.AN("force.relay"),
-			Name:    eos.ActN("commit"),
-			Authorization: []eos.PermissionLevel{
+		actions = append(actions, &types.Action{
+			Account: "force.relay",
+			Name:    "commit",
+			Authorization: []types.PermissionLevel{
 				c.committer,
 			},
-			ActionData: eos.NewActionData(cp),
+			Data: cp,
 		})
 	}
 

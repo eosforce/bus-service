@@ -16,7 +16,7 @@ func startRelayService() {
 	_, p2ps := cfg.GetChainCfg("relay")
 
 	// for chain id
-	info, err := side.Client().GetInfo()
+	info, err := side.Client().GetInfoData()
 	if err != nil {
 		panic(errors.New("get info err"))
 	}

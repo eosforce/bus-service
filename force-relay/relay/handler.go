@@ -3,6 +3,8 @@ package relay
 import (
 	"fmt"
 
+	"github.com/fanyang1988/force-go/types"
+
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
@@ -60,13 +62,13 @@ type OutAction struct {
 var num uint64
 
 func commitOutAction(committer cfg.Relayer, act *Destroy) error {
-	actToCommit := &eos.Action{
-		Account: eos.AN(cfg.GetRelayCfg().RelayContract),
-		Name:    eos.ActN("out"),
-		Authorization: []eos.PermissionLevel{
+	actToCommit := &types.Action{
+		Account: cfg.GetRelayCfg().RelayContract,
+		Name:    "out",
+		Authorization: []types.PermissionLevel{
 			committer.SideAccount,
 		},
-		ActionData: eos.NewActionData(OutAction{
+		Data: OutAction{
 			Committer: eos.Name(committer.RelayAccount.Actor),
 			Num:       num,
 			To:        eos.Name(act.From),
@@ -74,7 +76,7 @@ func commitOutAction(committer cfg.Relayer, act *Destroy) error {
 			Contract:  eos.Name("force.token"),
 			Quantity:  act.Quantity,
 			Memo:      act.Memo,
-		}),
+		},
 	}
 
 	_, err := client.PushActions(actToCommit)

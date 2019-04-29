@@ -39,15 +39,16 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b098ad1e035e2a16e8f70697a0b5f25e06ed0b0791b1bc3f46e477e83bf6cb5d"
+  digest = "1:8796335353914d7a65510f2583b825caa8062b3e561b5d95f76a37b43bdd64fd"
   name = "github.com/fanyang1988/force-go"
   packages = [
     ".",
-    "common",
     "config",
+    "forceio",
+    "types",
   ]
   pruneopts = "UT"
-  revision = "3be20551b6312d4b59647e5db22bf83a0cab9481"
+  revision = "babbeec3d3bef606b0c1f845ee09b303ef4f2dcb"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -149,6 +150,8 @@
     "github.com/fanyang1988/force-block-ev/log",
     "github.com/fanyang1988/force-go",
     "github.com/fanyang1988/force-go/config",
+    "github.com/fanyang1988/force-go/forceio",
+    "github.com/fanyang1988/force-go/types",
     "github.com/pkg/errors",
     "go.uber.org/zap",
     "go.uber.org/zap/zapcore",

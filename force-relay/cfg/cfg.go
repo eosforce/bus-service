@@ -4,14 +4,14 @@ import (
 	"errors"
 
 	"github.com/eosforce/bus-service/force-relay/logger"
-	eos "github.com/eosforce/goforceio"
 	"github.com/fanyang1988/force-go/config"
+	"github.com/fanyang1988/force-go/types"
 )
 
 // Relayer transfer, watcher and checker
 type Relayer struct {
-	SideAccount  eos.PermissionLevel
-	RelayAccount eos.PermissionLevel
+	SideAccount  types.PermissionLevel
+	RelayAccount types.PermissionLevel
 }
 
 // RelayCfg cfg for relay
@@ -100,26 +100,26 @@ func LoadCfgs(path string) error {
 
 	for _, t := range cfgInFile.Transfer {
 		transfers = append(transfers, Relayer{
-			SideAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.SideAcc),
-				Permission: eos.PN("active"),
+			SideAccount: types.PermissionLevel{
+				Actor:      t.SideAcc,
+				Permission: "active",
 			},
-			RelayAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.RelayAcc),
-				Permission: eos.PN("active"),
+			RelayAccount: types.PermissionLevel{
+				Actor:      t.RelayAcc,
+				Permission: "active",
 			},
 		})
 	}
 
 	for _, t := range cfgInFile.Watcher {
 		watchers = append(watchers, Relayer{
-			SideAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.SideAcc),
-				Permission: eos.PN("active"),
+			SideAccount: types.PermissionLevel{
+				Actor:      t.SideAcc,
+				Permission: "active",
 			},
-			RelayAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.RelayAcc),
-				Permission: eos.PN("active"),
+			RelayAccount: types.PermissionLevel{
+				Actor:      t.RelayAcc,
+				Permission: "active",
 			},
 		})
 	}

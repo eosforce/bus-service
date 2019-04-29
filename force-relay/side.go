@@ -19,7 +19,7 @@ func startSideService() {
 	side.InitCommitWorker(chainCfgs, cfg.GetTransfers())
 
 	// for p2p chain id
-	info, err := relay.Client().GetInfo()
+	info, err := relay.Client().GetInfoData()
 	if err != nil {
 		panic(errors.New("get info err"))
 	}
@@ -41,7 +41,7 @@ func startSideService() {
 		lastNum = 1
 	}
 
-	_, err = relay.Client().GetBlockByNum(lastNum)
+	_, err = relay.Client().GetBlockDataByNum(lastNum)
 	if err != nil {
 		panic(errors.Errorf("get block num %d err by %s", lastNum, err.Error()))
 	}
