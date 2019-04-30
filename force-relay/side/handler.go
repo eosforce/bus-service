@@ -2,8 +2,7 @@ package side
 
 import (
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
-
-	"github.com/cihub/seelog"
+	"github.com/eosforce/bus-service/force-relay/logger"
 )
 
 var lastCommittedBlockNum uint32
@@ -25,20 +24,20 @@ func handSideBlockImp(block *chainhandler.Block, actions []chainhandler.Action) 
 	var err error
 
 	if lastCommittedBlockNum > 0 && num != 0 && lastCommittedBlockNum >= num {
-		seelog.Debugf("no need commit %v to %v", lastCommittedBlockNum, num)
+		logger.Debugf("no need commit %v to %v", lastCommittedBlockNum, num)
 		return false
 	}
 
 	if lastCommittedBlockNum == 0 {
 		blockCommitLast, err = GetLastCommittedBlock()
 		if err != nil {
-			seelog.Errorf("get last commit block err by %v", err.Error())
+			logger.LogError("get last commit block err", err)
 		}
 		lastCommittedBlockNum = blockCommitLast.GetNum()
 	}
 
 	if blockCommitLast != nil && num != 0 && lastCommittedBlockNum >= num {
-		seelog.Debugf("no need commit %v to %v", lastCommittedBlockNum, num)
+		logger.Debugf("no need commit %v to %v", lastCommittedBlockNum, num)
 		return false
 	}
 

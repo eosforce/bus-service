@@ -1,14 +1,11 @@
 package chainhandler
 
 import (
-	"context"
 	"sync"
 
-	"github.com/cihub/seelog"
-
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
-
-	commit "github.com/eosforce/bus-service/force-relay/pbs/relay"
+	"go.uber.org/zap"
 )
 
 type HandlerFunc func(block *Block, actions []Action)
@@ -28,14 +25,13 @@ func NewChainHandler(h HandlerFunc) *ChainHandler {
 	res.wg.Add(1)
 	go func(ch *ChainHandler) {
 		defer ch.wg.Done()
-		seelog.Infof("start chain handler")
+		logger.Logger().Info("start chain handler")
 		for {
 			bi, ok := <-ch.blockQueue
 			if !ok {
-				seelog.Warnf("handler chan close")
+				logger.Logger().Error("handler chan close")
 				return
 			}
-			//seelog.Tracef("process block %d %s %s", bi.block.Num, bi.block.Previous, bi.block.ID)
 			ch.handler(&bi.block, bi.actions)
 		}
 	}(res)
@@ -43,42 +39,54 @@ func NewChainHandler(h HandlerFunc) *ChainHandler {
 	return res
 }
 
-func (s *ChainHandler) RpcSendaction(ctx context.Context, in *commit.RelayCommitRequest) (*commit.RelayCommitReply, error) {
+func (c *ChainHandler) OnBlock(blockNum uint32, blockID eos.Checksum256, block *eos.SignedBlock) error {
+	logger.Logger().Debug("on block",
+		zap.Uint32("num", blockNum),
+		zap.String("id", blockID.String()))
 	var bqi blockQueueItem
 	bqi.block = Block{
-		Producer:         eos.AN(in.Block.Producer),
-		Num:              BlockID2Num(in.Block.Id),
-		ID:               in.Block.Id,
-		Previous:         in.Block.Previous,
-		Confirmed:        uint16(in.Block.Confirmed),
-		TransactionMRoot: in.Block.TransactionMroot,
-		ActionMRoot:      in.Block.ActionMroot,
-		MRoot:            in.Block.Mroot,
+		Producer:         block.Producer,
+		Num:              blockNum,
+		ID:               blockID,
+		Previous:         block.Previous,
+		Confirmed:        uint16(block.Confirmed),
+		TransactionMRoot: block.TransactionMRoot,
+		ActionMRoot:      block.ActionMRoot,
 	}
 
-	actions := make([]Action, 0, len(in.Action))
-	for _, act := range in.Action {
-		auth := make([]PermissionLevel, 0, 8)
-		for _, authToTrx := range act.Authorization {
-			auth = append(auth, PermissionLevel{
-				Actor:      eos.AN(authToTrx.Actor),
-				Permission: eos.PN(authToTrx.Permission),
+	actions := make([]Action, 0, 1024)
+	for _, trx := range block.Transactions {
+		if trx.Status != eos.TransactionStatusExecuted {
+			continue
+		}
+
+		st, err := trx.Transaction.Packed.Unpack()
+		if err != nil {
+			continue
+		}
+
+		for _, act := range st.Actions {
+			auth := make([]PermissionLevel, 0, 8)
+			for _, authToTrx := range act.Authorization {
+				auth = append(auth, PermissionLevel{
+					Actor:      authToTrx.Actor,
+					Permission: authToTrx.Permission,
+				})
+			}
+			actions = append(actions, Action{
+				Account:       act.Account,
+				Name:          act.Name,
+				Authorization: auth,
+				Data:          act.HexData,
 			})
 		}
-		actions = append(actions, Action{
-			Account:       eos.AN(act.Account),
-			Name:          eos.ActN(act.ActionName),
-			Authorization: auth,
-			Data:          act.Data,
-		})
 	}
 	bqi.actions = actions[:]
-	s.blockQueue <- bqi
-
-	return &commit.RelayCommitReply{Reply: "get Block"}, nil
+	c.blockQueue <- bqi
+	return nil
 }
 
-func (s *ChainHandler) Close() {
-	close(s.blockQueue)
-	s.wg.Wait()
+func (c *ChainHandler) Close() {
+	close(c.blockQueue)
+	c.wg.Wait()
 }

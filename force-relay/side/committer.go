@@ -4,13 +4,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cihub/seelog"
-
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
-	eos "github.com/eosforce/goforceio"
-	force "github.com/fanyang1988/force-go"
+	"github.com/eosforce/bus-service/force-relay/logger"
+	"github.com/fanyang1988/force-go"
 	"github.com/fanyang1988/force-go/config"
+	"github.com/fanyang1988/force-go/types"
 )
 
 const (
@@ -22,16 +21,16 @@ const (
 )
 
 type commitWorker struct {
-	committer eos.PermissionLevel
+	committer types.PermissionLevel
 	works     chan commitParam
-	client    *force.Client
+	client    types.ClientInterface
 }
 
 type commitWorkers struct {
 	cws []*commitWorker
 }
 
-func newCommitWorkers(clientCfg *config.Config, committers []cfg.Relayer) *commitWorkers {
+func newCommitWorkers(clientCfg *config.ConfigData, committers []cfg.Relayer) *commitWorkers {
 	res := &commitWorkers{
 		cws: make([]*commitWorker, 0, len(committers)),
 	}
@@ -48,7 +47,7 @@ func newCommitWorkers(clientCfg *config.Config, committers []cfg.Relayer) *commi
 
 var commitWorkerMng *commitWorkers
 
-func InitCommitWorker(clientCfg *config.Config, committers []cfg.Relayer) {
+func InitCommitWorker(clientCfg *config.ConfigData, committers []cfg.Relayer) {
 	commitWorkerMng = newCommitWorkers(clientCfg, committers)
 }
 
@@ -58,12 +57,12 @@ func (c *commitWorkers) OnBlock(block *chainhandler.Block, actions []chainhandle
 	}
 }
 
-func (c *commitWorker) Start(cfg *config.Config) {
+func (c *commitWorker) Start(cfg *config.ConfigData) {
 	c.works = make(chan commitParam, 4096)
 	for {
-		client, err := force.NewClient(cfg)
+		client, err := force.NewClient(force.FORCEIO, cfg)
 		if err != nil {
-			seelog.Warnf("create client error by %s , need retry", err.Error())
+			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
 		} else {
 			c.client = client
@@ -78,8 +77,8 @@ func (c *commitWorker) Start(cfg *config.Config) {
 
 func (c *commitWorker) OnBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 	c.works <- commitParam{
-		Name:     eos.Name(cfg.GetRelayCfg().Chain),
-		Transfer: c.committer.Actor,
+		Name:     c.client.Name(cfg.GetRelayCfg().Chain),
+		Transfer: c.client.Name(c.committer.Actor),
 		Block:    *block,
 		Actions:  actions,
 	}
@@ -113,37 +112,37 @@ func (c *commitWorker) Loop() {
 }
 
 func (c *commitWorker) CommitTrx(cps []commitParam) {
-	actions := make([]*eos.Action, 0, len(cps))
+	actions := make([]*types.Action, 0, len(cps))
 
 	for _, cp := range cps {
-		actions = append(actions, &eos.Action{
-			Account: eos.AN("force.relay"),
-			Name:    eos.ActN("commit"),
-			Authorization: []eos.PermissionLevel{
+		actions = append(actions, &types.Action{
+			Account: "force.relay",
+			Name:    "commit",
+			Authorization: []types.PermissionLevel{
 				c.committer,
 			},
-			ActionData: eos.NewActionData(cp),
+			Data: cp,
 		})
 	}
 
-	seelog.Tracef("commit %s blocks num : %d -> %d",
+	logger.Debugf("commit %s blocks num : %d -> %d",
 		string(c.committer.Actor), cps[0].Block.Num, cps[len(cps)-1].Block.Num)
 
 	for i := 0; i < retryTimes; i++ {
 		if i > 1 {
-			time.Sleep(50 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
 		_, err := c.client.PushActions(actions...)
 
 		if err != nil {
-			seelog.Warnf("commit action err by %s", err.Error())
+			logger.LogError("commit action err", err)
 			if strings.Contains(err.Error(), "Transaction took too long") {
-				seelog.Warnf("need wait chain")
-				time.Sleep(5 * time.Second)
+				logger.Warnf("need wait chain err by took too long")
+				time.Sleep(8 * time.Second)
 			}
 
 			if strings.Contains(err.Error(), "RAM") {
-				seelog.Warnf("need wait other chain")
+				logger.Warnf("need wait other chain err by RAM")
 				time.Sleep(8 * time.Second)
 			}
 		} else {

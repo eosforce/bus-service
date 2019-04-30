@@ -1,32 +1,37 @@
 package side
 
 import (
-	"github.com/cihub/seelog"
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
-	eos "github.com/eosforce/goforceio"
+	"github.com/eosforce/bus-service/force-relay/logger"
+	"github.com/fanyang1988/force-go/types"
+	"go.uber.org/zap"
 )
 
 type commitParam struct {
-	Name     eos.Name              `json:"chain"`
-	Transfer eos.AccountName       `json:"transfer"`
+	Name     interface{}           `json:"chain"`
+	Transfer interface{}           `json:"transfer"`
 	Block    chainhandler.Block    `json:"block"`
 	Actions  []chainhandler.Action `json:"actions"`
 }
 
-func newCommitAction(b *chainhandler.Block, transfer eos.PermissionLevel, actionsToCommit []chainhandler.Action) *eos.Action {
-	seelog.Infof("commit block %d %v %d %v", b.GetNum(), b.ID, len(actionsToCommit), b.Previous)
-	return &eos.Action{
-		Account: eos.AN("force.relay"),
-		Name:    eos.ActN("commit"),
-		Authorization: []eos.PermissionLevel{
+func newCommitAction(b *chainhandler.Block, transfer types.PermissionLevel, actionsToCommit []chainhandler.Action) *types.Action {
+	logger.Logger().Info("commit block",
+		zap.Uint32("num", b.GetNum()),
+		zap.String("id", b.ID.String()),
+		zap.Int("action", len(actionsToCommit)),
+		zap.String("previous", b.Previous.String()))
+	return &types.Action{
+		Account: "force.relay",
+		Name:    "commit",
+		Authorization: []types.PermissionLevel{
 			transfer,
 		},
-		ActionData: eos.NewActionData(commitParam{
-			Name:     eos.Name(cfg.GetRelayCfg().Chain),
+		Data: commitParam{
+			Name:     cfg.GetRelayCfg().Chain,
 			Transfer: transfer.Actor,
 			Block:    *b,
 			Actions:  actionsToCommit,
-		}),
+		},
 	}
 }

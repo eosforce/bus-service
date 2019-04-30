@@ -3,16 +3,15 @@ package cfg
 import (
 	"errors"
 
-	"github.com/cihub/seelog"
-
-	eos "github.com/eosforce/goforceio"
+	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/fanyang1988/force-go/config"
+	"github.com/fanyang1988/force-go/types"
 )
 
 // Relayer transfer, watcher and checker
 type Relayer struct {
-	SideAccount  eos.PermissionLevel
-	RelayAccount eos.PermissionLevel
+	SideAccount  types.PermissionLevel
+	RelayAccount types.PermissionLevel
 }
 
 // RelayCfg cfg for relay
@@ -24,18 +23,23 @@ type RelayCfg struct {
 var relayCfg RelayCfg
 
 // ChainCfgs cfg for each chain
-var chainCfgs map[string]*config.Config
+var chainCfgs map[string]*config.ConfigData
+var chainP2PCfgs map[string][]string
 
 var transfers []Relayer
 var watchers []Relayer
 
 // GetChainCfg get chain cfg
-func GetChainCfg(name string) *config.Config {
+func GetChainCfg(name string) (*config.ConfigData, []string) {
 	c, ok := chainCfgs[name]
 	if !ok || c == nil {
 		panic(errors.New("no find chain cfg "))
 	}
-	return c
+	p, ok := chainP2PCfgs[name]
+	if !ok {
+		panic(errors.New("no find chain p2p cfg "))
+	}
+	return c, p
 }
 
 // GetTransfers get transfers
@@ -58,6 +62,7 @@ func LoadCfgs(path string) error {
 	cfgInFile := struct {
 		Chains []struct {
 			Name string            `json:"name"`
+			P2P  []string          `json:"p2p"`
 			Cfg  config.ConfigData `json:"cfg"`
 		} `json:"chains"`
 		Transfer []struct {
@@ -76,39 +81,39 @@ func LoadCfgs(path string) error {
 		return err
 	}
 
-	chainCfgs = make(map[string]*config.Config)
+	chainCfgs = make(map[string]*config.ConfigData)
 	for _, c := range cfgInFile.Chains {
-		cc := config.Config{}
-		err := cc.Parse(&c.Cfg)
-		seelog.Tracef("load cfg %v", cc)
-		if err != nil {
-			return err
-		}
-		chainCfgs[c.Name] = &cc
+		chainCfgs[c.Name] = &c.Cfg
+	}
+
+	chainP2PCfgs = make(map[string][]string)
+	for _, c := range cfgInFile.Chains {
+		logger.Debugf("load p2p cfg %s -> %v", c.Name, c.P2P)
+		chainP2PCfgs[c.Name] = c.P2P
 	}
 
 	for _, t := range cfgInFile.Transfer {
 		transfers = append(transfers, Relayer{
-			SideAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.SideAcc),
-				Permission: eos.PN("active"),
+			SideAccount: types.PermissionLevel{
+				Actor:      t.SideAcc,
+				Permission: "active",
 			},
-			RelayAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.RelayAcc),
-				Permission: eos.PN("active"),
+			RelayAccount: types.PermissionLevel{
+				Actor:      t.RelayAcc,
+				Permission: "active",
 			},
 		})
 	}
 
 	for _, t := range cfgInFile.Watcher {
 		watchers = append(watchers, Relayer{
-			SideAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.SideAcc),
-				Permission: eos.PN("active"),
+			SideAccount: types.PermissionLevel{
+				Actor:      t.SideAcc,
+				Permission: "active",
 			},
-			RelayAccount: eos.PermissionLevel{
-				Actor:      eos.AN(t.RelayAcc),
-				Permission: eos.PN("active"),
+			RelayAccount: types.PermissionLevel{
+				Actor:      t.RelayAcc,
+				Permission: "active",
 			},
 		})
 	}

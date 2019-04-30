@@ -3,34 +3,41 @@ package side
 import (
 	"time"
 
-	"github.com/cihub/seelog"
+	"github.com/fanyang1988/force-go/types"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
-
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
-
+	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
 	force "github.com/fanyang1988/force-go"
 	"github.com/fanyang1988/force-go/config"
+	forceio "github.com/fanyang1988/force-go/forceio"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 )
 
 // client client to force relay chain
-var client *force.Client
+var client types.ClientInterface
 
 // CreateClient create client to force relay chain
-func CreateClient(cfg *config.Config) {
+func CreateClient(cfg *config.ConfigData) {
 	for {
 		var err error
-		seelog.Tracef("cfg %v", *cfg)
-		client, err = force.NewClient(cfg)
+		logger.Logger().Info("create client cfg",
+			zap.String("url", cfg.URL),
+			zap.String("chainID", cfg.ChainID))
+		client, err = force.NewClient(force.FORCEIO, cfg)
 		if err != nil {
-			seelog.Warnf("create client error by %s , need retry", err.Error())
+			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
 		} else {
 			return
 		}
 	}
+}
+
+func Client() types.ClientInterface {
+	return client
 }
 
 type lastCommitBlockInfo struct {
@@ -46,7 +53,9 @@ func GetLastCommittedBlock() (*chainhandler.Block, error) {
 		Table: "relaystat",
 	}
 
-	res, err := client.GetTableRows(req)
+	forceioClient := client.(*forceio.API)
+
+	res, err := forceioClient.GetTableRows(req)
 	if err != nil {
 		return nil, err
 	}
