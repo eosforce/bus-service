@@ -28,9 +28,41 @@ func (b *BlockToForceio) FromGeneral(sw types.SwitcherInterface, bk *chainhandle
 	b.MRoot = forceio.Checksum256(bk.MRoot)
 }
 
+type ActionToCommit struct {
+	Account       interface{}               `json:"account"`
+	Name          interface{}               `json:"name"`
+	Authorization []PermissionLevelToCommit `json:"authorization"`
+	Data          []byte                    `json:"data"`
+}
+
+type PermissionLevelToCommit struct {
+	Actor      interface{} `json:"actor"`
+	Permission interface{} `json:"permission"`
+}
+
 type commitParam struct {
-	Name     interface{}           `json:"chain"`
-	Transfer interface{}           `json:"transfer"`
-	Block    BlockToForceio        `json:"block"`
-	Actions  []chainhandler.Action `json:"actions"`
+	Name     interface{}      `json:"chain"`
+	Transfer interface{}      `json:"transfer"`
+	Block    BlockToForceio   `json:"block"`
+	Actions  []ActionToCommit `json:"actions"`
+}
+
+func (c *commitParam) FromGeneral(sw types.SwitcherInterface, block *chainhandler.Block, actions []chainhandler.Action) {
+	c.Block.FromGeneral(sw, block)
+	c.Actions = make([]ActionToCommit, 0, len(actions))
+	for _, act := range actions {
+		act2Commit := ActionToCommit{
+			Account:       sw.NameFromCommon(act.Account),
+			Name:          sw.NameFromCommon(act.Name),
+			Authorization: make([]PermissionLevelToCommit, 0, len(act.Authorization)),
+			Data:          act.Data,
+		}
+		for _, p := range act.Authorization {
+			act2Commit.Authorization = append(act2Commit.Authorization, PermissionLevelToCommit{
+				Actor:      sw.NameFromCommon(p.Actor),
+				Permission: sw.NameFromCommon(p.Permission),
+			})
+		}
+		c.Actions = append(c.Actions, act2Commit)
+	}
 }

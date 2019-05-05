@@ -79,9 +79,8 @@ func (c *commitWorker) OnBlock(block *chainhandler.Block, actions []chainhandler
 	cc := commitParam{
 		Name:     c.client.Name(cfg.GetRelayCfg().Chain),
 		Transfer: c.client.Name(c.committer.Actor),
-		Actions:  actions,
 	}
-	cc.Block.FromGeneral(types.NewSwitcherInterface(types.FORCEIO), block)
+	cc.FromGeneral(types.NewSwitcherInterface(types.FORCEIO), block, actions)
 	c.works <- cc
 }
 

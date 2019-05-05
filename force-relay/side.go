@@ -40,7 +40,7 @@ func startSideService() {
 	}
 
 	var syncData *p2p.P2PSyncData
-	if lastNum > 100 {
+	if false {
 		lastBlockData, err := relay.Client().GetBlockDataByNum(lastNum)
 		if err != nil {
 			panic(errors.Errorf("get block num %d err by %s", lastNum, err.Error()))
