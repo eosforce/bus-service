@@ -1,0 +1,33 @@
+{
+  "chains": [{
+    "name": "relay",
+    "typ": "forceio",
+    "p2p": [
+      "127.0.0.1:8101","127.0.0.1:8102"
+    ],
+    "cfg": {
+      "url": "http://127.0.0.1:8001",
+      "pri":["5KYQvUwt6vMpLJxqg4jSQNkuRfktDHtYDp8LPoBpYo8emvS1GfG", "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"]
+    }
+  }, {
+    "name": "side",
+    "typ": "eosforce",
+    "p2p": [
+      "192.168.2.180:9001","192.168.2.180:9002"
+    ],
+    "cfg": {
+      "url": "http://192.168.2.180:8001",
+      "pri":["5HpWZt4C2nS41fevEChwu5vssUqJphJv7q7hTnv2KSz9BNEeEoj","5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"]
+    }
+  }],
+  "transfer": [{
+    "account": "transferc",
+    "relayacc": "testc"
+  }],
+
+  "relay":{
+    "chain":"eosforce",
+    "relaycontract":"rs"
+  }
+
+}

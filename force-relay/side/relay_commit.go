@@ -1,37 +1,36 @@
 package side
 
 import (
-	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
-	"github.com/eosforce/bus-service/force-relay/logger"
+	forceio "github.com/eosforce/goforceio"
 	"github.com/fanyang1988/force-go/types"
-	"go.uber.org/zap"
 )
+
+type BlockToForceio struct {
+	Producer         forceio.AccountName `json:"producer"`
+	Num              uint32              `json:"num"`
+	ID               forceio.Checksum256 `json:"id"`
+	Previous         forceio.Checksum256 `json:"previous"`
+	Confirmed        uint16              `json:"confirmed"`
+	TransactionMRoot forceio.Checksum256 `json:"transaction_mroot"`
+	ActionMRoot      forceio.Checksum256 `json:"action_mroot"`
+	MRoot            forceio.Checksum256 `json:"mroot"`
+}
+
+func (b *BlockToForceio) FromGeneral(sw types.SwitcherInterface, bk *chainhandler.Block) {
+	b.Producer = forceio.AN(bk.Producer)
+	b.Num = bk.Num
+	b.Confirmed = bk.Confirmed
+	b.ID = forceio.Checksum256(bk.ID)
+	b.Previous = forceio.Checksum256(bk.Previous)
+	b.TransactionMRoot = forceio.Checksum256(bk.TransactionMRoot)
+	b.ActionMRoot = forceio.Checksum256(bk.ActionMRoot)
+	b.MRoot = forceio.Checksum256(bk.MRoot)
+}
 
 type commitParam struct {
 	Name     interface{}           `json:"chain"`
 	Transfer interface{}           `json:"transfer"`
-	Block    chainhandler.Block    `json:"block"`
+	Block    BlockToForceio        `json:"block"`
 	Actions  []chainhandler.Action `json:"actions"`
-}
-
-func newCommitAction(b *chainhandler.Block, transfer types.PermissionLevel, actionsToCommit []chainhandler.Action) *types.Action {
-	logger.Logger().Info("commit block",
-		zap.Uint32("num", b.GetNum()),
-		zap.String("id", b.ID.String()),
-		zap.Int("action", len(actionsToCommit)),
-		zap.String("previous", b.Previous.String()))
-	return &types.Action{
-		Account: "force.relay",
-		Name:    "commit",
-		Authorization: []types.PermissionLevel{
-			transfer,
-		},
-		Data: commitParam{
-			Name:     cfg.GetRelayCfg().Chain,
-			Transfer: transfer.Actor,
-			Block:    *b,
-			Actions:  actionsToCommit,
-		},
-	}
 }

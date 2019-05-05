@@ -76,12 +76,13 @@ func (c *commitWorker) Start(cfg *config.ConfigData) {
 }
 
 func (c *commitWorker) OnBlock(block *chainhandler.Block, actions []chainhandler.Action) {
-	c.works <- commitParam{
+	cc := commitParam{
 		Name:     c.client.Name(cfg.GetRelayCfg().Chain),
 		Transfer: c.client.Name(c.committer.Actor),
-		Block:    *block,
 		Actions:  actions,
 	}
+	cc.Block.FromGeneral(types.NewSwitcherInterface(types.FORCEIO), block)
+	c.works <- cc
 }
 
 func (c *commitWorker) Loop() {
@@ -127,6 +128,10 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 
 	logger.Debugf("commit %s blocks num : %d -> %d",
 		string(c.committer.Actor), cps[0].Block.Num, cps[len(cps)-1].Block.Num)
+
+	for idx, act := range actions {
+		logger.Debugf("commit %d by %v", cps[idx].Block.Num, act.Data)
+	}
 
 	for i := 0; i < retryTimes; i++ {
 		if i > 1 {

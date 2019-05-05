@@ -14,12 +14,14 @@ type ChainHandler struct {
 	handler    HandlerFunc
 	blockQueue chan blockQueueItem
 	wg         sync.WaitGroup
+	switcher   types.SwitcherInterface
 }
 
-func NewChainHandler(h HandlerFunc) *ChainHandler {
+func NewChainHandler(h HandlerFunc, chainTyp types.ClientType) *ChainHandler {
 	res := &ChainHandler{
 		handler:    h,
 		blockQueue: make(chan blockQueueItem, 4096),
+		switcher:   types.NewSwitcherInterface(chainTyp),
 	}
 
 	res.wg.Add(1)

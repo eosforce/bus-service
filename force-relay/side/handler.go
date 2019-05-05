@@ -20,7 +20,7 @@ func handSideBlockImp(block *chainhandler.Block, actions []chainhandler.Action) 
 
 	num := block.GetNum()
 
-	var blockCommitLast *chainhandler.Block
+	var blockCommitLast *BlockToForceio
 	var err error
 
 	if lastCommittedBlockNum > 0 && num != 0 && lastCommittedBlockNum >= num {
@@ -33,7 +33,7 @@ func handSideBlockImp(block *chainhandler.Block, actions []chainhandler.Action) 
 		if err != nil {
 			logger.LogError("get last commit block err", err)
 		}
-		lastCommittedBlockNum = blockCommitLast.GetNum()
+		lastCommittedBlockNum = blockCommitLast.Num
 	}
 
 	if blockCommitLast != nil && num != 0 && lastCommittedBlockNum >= num {

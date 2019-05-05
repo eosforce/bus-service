@@ -11,12 +11,12 @@ import (
 	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/fanyang1988/force-block-ev/blockdb"
 	"github.com/fanyang1988/force-go/p2p"
-	"github.com/fanyang1988/force-go/types"
 )
 
 func startRelayService() {
 	// from relay to side, so create side client
 	_, p2ps := cfg.GetChainCfg("relay")
+	chainTyp := cfg.GetChainTyp("relay")
 
 	// for chain id
 	info, err := side.Client().GetInfoData()
@@ -24,7 +24,7 @@ func startRelayService() {
 		panic(errors.New("get info err"))
 	}
 
-	p2pPeers := p2p.NewP2PClient(types.EOSForce, p2p.P2PInitParams{
+	p2pPeers := p2p.NewP2PClient(chainTyp, p2p.P2PInitParams{
 		Name:       "testNode",
 		ClientID:   info.ChainID.String(),
 		StartBlock: nil,
@@ -36,7 +36,7 @@ func startRelayService() {
 		verifier: blockdb.NewFastBlockVerifier(p2ps, 0, chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
 				relay.HandRelayBlock(block, actions)
-			})),
+			}, chainTyp)),
 	})
 	p2pPeers.Start()
 }
