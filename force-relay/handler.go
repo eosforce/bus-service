@@ -1,23 +1,18 @@
 package main
 
 import (
-	eos "github.com/eosforce/goforceio"
 	"github.com/fanyang1988/force-block-ev/blockdb"
+	"github.com/fanyang1988/force-go/types"
 )
 
 type handlerImp struct {
 	verifier *blockdb.FastBlockVerifier
 }
 
-func (h *handlerImp) OnBlock(peer string, msg *eos.SignedBlock) error {
+func (h *handlerImp) OnBlock(peer string, msg *types.BlockGeneralInfo) error {
 	return h.verifier.OnBlock(peer, msg)
 }
-func (h *handlerImp) OnGoAway(peer string, msg *eos.GoAwayMessage) error {
-	return nil
-}
-func (h *handlerImp) OnHandshake(peer string, msg *eos.HandshakeMessage) error {
-	return nil
-}
-func (h *handlerImp) OnTimeMsg(peer string, msg *eos.TimeMessage) error {
+
+func (h *handlerImp) OnGoAway(peer string, reason uint8, nodeID types.Checksum256) error {
 	return nil
 }

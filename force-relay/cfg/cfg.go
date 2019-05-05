@@ -25,6 +25,7 @@ var relayCfg RelayCfg
 // ChainCfgs cfg for each chain
 var chainCfgs map[string]*config.ConfigData
 var chainP2PCfgs map[string][]string
+var chainTyp map[string]types.ClientType
 
 var transfers []Relayer
 var watchers []Relayer
@@ -40,6 +41,15 @@ func GetChainCfg(name string) (*config.ConfigData, []string) {
 		panic(errors.New("no find chain p2p cfg "))
 	}
 	return c, p
+}
+
+// GetChainTyp get chain cfg type
+func GetChainTyp(name string) types.ClientType {
+	p, ok := chainTyp[name]
+	if !ok {
+		panic(errors.New("no find chain type cfg "))
+	}
+	return p
 }
 
 // GetTransfers get transfers
@@ -62,6 +72,7 @@ func LoadCfgs(path string) error {
 	cfgInFile := struct {
 		Chains []struct {
 			Name string            `json:"name"`
+			Type string            `json:"typ"`
 			P2P  []string          `json:"p2p"`
 			Cfg  config.ConfigData `json:"cfg"`
 		} `json:"chains"`
@@ -82,15 +93,27 @@ func LoadCfgs(path string) error {
 	}
 
 	chainCfgs = make(map[string]*config.ConfigData)
-	for _, c := range cfgInFile.Chains {
-		chainCfgs[c.Name] = &c.Cfg
+	for idx, c := range cfgInFile.Chains {
+		chainCfgs[c.Name] = &cfgInFile.Chains[idx].Cfg
 	}
+
+	logger.Debugf("chain cfgs %v", chainCfgs)
 
 	chainP2PCfgs = make(map[string][]string)
 	for _, c := range cfgInFile.Chains {
 		logger.Debugf("load p2p cfg %s -> %v", c.Name, c.P2P)
 		chainP2PCfgs[c.Name] = c.P2P
 	}
+
+	logger.Debugf("chain cfgs %v", chainP2PCfgs)
+
+	chainTyp = make(map[string]types.ClientType)
+	for _, c := range cfgInFile.Chains {
+		logger.Debugf("load chain cfg %s -> %v", c.Name, c.Type)
+		chainTyp[c.Name] = types.String2ClientType(c.Type)
+	}
+
+	logger.Debugf("chain cfgs %v", chainTyp)
 
 	for _, t := range cfgInFile.Transfer {
 		transfers = append(transfers, Relayer{

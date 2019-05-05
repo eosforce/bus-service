@@ -3,18 +3,18 @@ package chainhandler
 import (
 	"encoding/binary"
 
-	eos "github.com/eosforce/goforceio"
+	"github.com/fanyang1988/force-go/types"
 )
 
 type Block struct {
-	Producer         eos.AccountName `json:"producer"`
-	Num              uint32          `json:"num"`
-	ID               eos.Checksum256 `json:"id"`
-	Previous         eos.Checksum256 `json:"previous"`
-	Confirmed        uint16          `json:"confirmed"`
-	TransactionMRoot eos.Checksum256 `json:"transaction_mroot"`
-	ActionMRoot      eos.Checksum256 `json:"action_mroot"`
-	MRoot            eos.Checksum256 `json:"mroot"`
+	Producer         string            `json:"producer"`
+	Num              uint32            `json:"num"`
+	ID               types.Checksum256 `json:"id"`
+	Previous         types.Checksum256 `json:"previous"`
+	Confirmed        uint16            `json:"confirmed"`
+	TransactionMRoot types.Checksum256 `json:"transaction_mroot"`
+	ActionMRoot      types.Checksum256 `json:"action_mroot"`
+	MRoot            types.Checksum256 `json:"mroot"`
 }
 
 func (b *Block) GetNum() uint32 {
@@ -29,13 +29,13 @@ func BlockID2Num(blockID []byte) uint32 {
 }
 
 type Action struct {
-	Account       eos.AccountName   `json:"account"`
-	Name          eos.ActionName    `json:"name"`
+	Account       string            `json:"account"`
+	Name          string            `json:"name"`
 	Authorization []PermissionLevel `json:"authorization"`
 	Data          []byte            `json:"data"`
 }
 
 type PermissionLevel struct {
-	Actor      eos.AccountName    `json:"actor"`
-	Permission eos.PermissionName `json:"permission"`
+	Actor      string `json:"actor"`
+	Permission string `json:"permission"`
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/fanyang1988/force-go/types"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
-	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
 	eos "github.com/eosforce/goforceio"
 	force "github.com/fanyang1988/force-go"
@@ -20,13 +19,13 @@ import (
 var client types.ClientInterface
 
 // CreateClient create client to force relay chain
-func CreateClient(cfg *config.ConfigData) {
+func CreateClient(typ types.ClientType, cfg *config.ConfigData) {
 	for {
 		var err error
 		logger.Logger().Info("create client cfg",
 			zap.String("url", cfg.URL),
 			zap.String("chainID", cfg.ChainID))
-		client, err = force.NewClient(force.FORCEIO, cfg)
+		client, err = force.NewClient(typ, cfg)
 		if err != nil {
 			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
@@ -41,29 +40,34 @@ func Client() types.ClientInterface {
 }
 
 type lastCommitBlockInfo struct {
-	Chain eos.Name           `json:"chain"`
-	Last  chainhandler.Block `json:"last"`
+	Chain eos.Name       `json:"chain"`
+	Last  BlockToForceio `json:"last"`
 }
 
 // GetLastCommittedBlock get last committed block to relay chain
-func GetLastCommittedBlock() (*chainhandler.Block, error) {
+func GetLastCommittedBlock() (*BlockToForceio, error) {
 	req := eos.GetTableRowsRequest{
 		Code:  "force.relay",
 		Scope: cfg.GetRelayCfg().Chain,
 		Table: "relaystat",
 	}
 
-	forceioClient := client.(*forceio.API)
+	forceioClient, ok := client.(*forceio.API)
+	if !ok {
+		return nil, types.ErrNoSupportChain
+	}
+
+	logger.Debugf("get last cm block %s", cfg.GetRelayCfg().Chain)
 
 	res, err := forceioClient.GetTableRows(req)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "get table")
 	}
 
 	rspBlock := make([]lastCommitBlockInfo, 0, 32)
 	err = res.BinaryToStructs(&rspBlock)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "to struct")
 	}
 
 	if len(rspBlock) == 0 {

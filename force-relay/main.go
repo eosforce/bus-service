@@ -46,10 +46,12 @@ func main() {
 	}
 
 	sideChainCfg, _ := cfg.GetChainCfg("side")
-	relay.CreateSideClient(sideChainCfg)
+	sideChainTyp := cfg.GetChainTyp("side")
+	relay.CreateSideClient(sideChainTyp, sideChainCfg)
 
 	relayChainCfg, _ := cfg.GetChainCfg("relay")
-	side.CreateClient(relayChainCfg)
+	relayChainTyp := cfg.GetChainTyp("relay")
+	side.CreateClient(relayChainTyp, relayChainCfg)
 
 	go func() {
 		if len(cfg.GetWatchers()) == 0 {
