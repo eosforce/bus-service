@@ -22,7 +22,7 @@ type Destroy struct {
 func HandRelayBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 	logger.Debugf("on block from relay %d", block.GetNum())
 	for _, act := range actions {
-		if act.Account != eos.AN("relay.token") || act.Name != eos.ActN("destroy") {
+		if act.Account != "relay.token" || act.Name != "destroy" {
 			continue
 		}
 

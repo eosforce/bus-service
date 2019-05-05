@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/eosforce/bus-service/force-relay/logger"
-	"github.com/pkg/errors"
-
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
+	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/eosforce/bus-service/force-relay/relay"
 	"github.com/eosforce/bus-service/force-relay/side"
 	"github.com/fanyang1988/force-block-ev/blockdb"
-	"github.com/fanyang1988/force-block-ev/blockev"
+	"github.com/fanyang1988/force-go/p2p"
+	"github.com/fanyang1988/force-go/types"
+	"github.com/pkg/errors"
 )
 
 func startSideService() {
@@ -41,18 +41,30 @@ func startSideService() {
 		lastNum = 1
 	}
 
-	_, err = relay.Client().GetBlockDataByNum(lastNum)
+	lastBlockData, err := relay.Client().GetBlockDataByNum(lastNum)
 	if err != nil {
 		panic(errors.Errorf("get block num %d err by %s", lastNum, err.Error()))
 	}
 
-	p2pPeers := blockev.NewP2PPeers("relay", info.ChainID.String(), nil, p2ps)
-	p2pPeers.RegisterHandler(blockev.NewP2PMsgHandler(&handlerImp{
-		verifier: blockdb.NewFastBlockVerifier(p2ps, chainhandler.NewChainHandler(
-			func(block *chainhandler.Block, actions []chainhandler.Action) {
-				side.HandSideBlock(block, actions)
-			})),
-	}))
-	p2pPeers.Start()
+	p2pPeers := p2p.NewP2PClient(types.FORCEIO, p2p.P2PInitParams{
+		Name:     "relay",
+		ClientID: info.ChainID.String(),
+		StartBlock: &p2p.P2PSyncData{
+			HeadBlockNum:             lastBlockData.BlockNum,
+			HeadBlockID:              lastBlockData.ID,
+			HeadBlockTime:            lastBlockData.Timestamp,
+			LastIrreversibleBlockNum: lastBlockData.BlockNum,
+			LastIrreversibleBlockID:  lastBlockData.ID,
+		},
+		Peers:  p2ps,
+		Logger: logger.Logger(),
+	})
 
+	p2pPeers.RegHandler(&handlerImp{
+		verifier: blockdb.NewFastBlockVerifier(p2ps, 0, chainhandler.NewChainHandler(
+			func(block *chainhandler.Block, actions []chainhandler.Action) {
+				relay.HandRelayBlock(block, actions)
+			})),
+	})
+	p2pPeers.Start()
 }

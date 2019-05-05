@@ -26,7 +26,7 @@ func CreateClient(cfg *config.ConfigData) {
 		logger.Logger().Info("create client cfg",
 			zap.String("url", cfg.URL),
 			zap.String("chainID", cfg.ChainID))
-		client, err = force.NewClient(force.FORCEIO, cfg)
+		client, err = force.NewClient(types.FORCEIO, cfg)
 		if err != nil {
 			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)

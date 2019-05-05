@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/eosforce/bus-service/force-relay/logger"
-	eos "github.com/eosforce/goforceio"
+	"github.com/fanyang1988/force-go/types"
 	"go.uber.org/zap"
 )
 
@@ -39,15 +39,15 @@ func NewChainHandler(h HandlerFunc) *ChainHandler {
 	return res
 }
 
-func (c *ChainHandler) OnBlock(blockNum uint32, blockID eos.Checksum256, block *eos.SignedBlock) error {
+func (c *ChainHandler) OnBlock(block *types.BlockGeneralInfo) error {
 	logger.Logger().Debug("on block",
-		zap.Uint32("num", blockNum),
-		zap.String("id", blockID.String()))
+		zap.Uint32("num", block.BlockNum),
+		zap.String("id", block.ID.String()))
 	var bqi blockQueueItem
 	bqi.block = Block{
 		Producer:         block.Producer,
-		Num:              blockNum,
-		ID:               blockID,
+		Num:              block.BlockNum,
+		ID:               block.ID,
 		Previous:         block.Previous,
 		Confirmed:        uint16(block.Confirmed),
 		TransactionMRoot: block.TransactionMRoot,
@@ -56,16 +56,11 @@ func (c *ChainHandler) OnBlock(blockNum uint32, blockID eos.Checksum256, block *
 
 	actions := make([]Action, 0, 1024)
 	for _, trx := range block.Transactions {
-		if trx.Status != eos.TransactionStatusExecuted {
+		if trx.Status != types.TransactionStatusExecuted {
 			continue
 		}
 
-		st, err := trx.Transaction.Packed.Unpack()
-		if err != nil {
-			continue
-		}
-
-		for _, act := range st.Actions {
+		for _, act := range trx.Transaction.Actions {
 			auth := make([]PermissionLevel, 0, 8)
 			for _, authToTrx := range act.Authorization {
 				auth = append(auth, PermissionLevel{

@@ -60,7 +60,7 @@ func (c *commitWorkers) OnBlock(block *chainhandler.Block, actions []chainhandle
 func (c *commitWorker) Start(cfg *config.ConfigData) {
 	c.works = make(chan commitParam, 4096)
 	for {
-		client, err := force.NewClient(force.FORCEIO, cfg)
+		client, err := force.NewClient(types.FORCEIO, cfg)
 		if err != nil {
 			logger.LogError("create client error, need retry", err)
 			time.Sleep(1 * time.Second)
