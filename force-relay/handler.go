@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/fanyang1988/force-block-ev/blockdb"
 	"github.com/fanyang1988/force-go/types"
 )
@@ -10,6 +11,7 @@ type handlerImp struct {
 }
 
 func (h *handlerImp) OnBlock(peer string, msg *types.BlockGeneralInfo) error {
+	logger.Debugf("on b %s", msg.BlockNum)
 	return h.verifier.OnBlock(peer, msg)
 }
 

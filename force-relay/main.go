@@ -25,9 +25,10 @@ func init() {
 func main() {
 	flag.Parse()
 	logger.EnableLogging(*isDebug)
-	blockevlog.SetLogger(logger.Logger())
+
 	if *isDebug {
 		p2p.EnableP2PLogging()
+		blockevlog.SetLogger(logger.Logger())
 	}
 
 	defer func() {

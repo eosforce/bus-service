@@ -1,67 +1,79 @@
 package relay
 
 import (
-	"fmt"
+	"github.com/eosforce/bus-service/force-relay/chaindata"
+	"github.com/eosforce/bus-service/force-relay/side"
 
 	"github.com/fanyang1988/force-go/types"
+	"go.uber.org/zap"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
-	eos "github.com/eosforce/goforceio"
+	forceio "github.com/eosforce/goforceio"
 )
 
 // Destroy action data for relay.token::destroy action
 type Destroy struct {
-	Chain    eos.Name        `json:"chain"`
-	From     eos.AccountName `json:"from"`
-	Quantity eos.Asset       `json:"quantity"`
-	Memo     string          `json:"memo"`
+	Chain    forceio.Name        `json:"chain"`
+	From     forceio.AccountName `json:"from"`
+	Quantity forceio.Asset       `json:"quantity"`
+	Memo     string              `json:"memo"`
 }
 
 func HandRelayBlock(block *chainhandler.Block, actions []chainhandler.Action) {
 	logger.Debugf("on block from relay %d", block.GetNum())
-	for _, act := range actions {
+	for idx, act := range actions {
 		if act.Account != "relay.token" || act.Name != "destroy" {
 			continue
 		}
 
 		var actData Destroy
-		err := eos.UnmarshalBinary(act.Data, &actData)
+		err := forceio.UnmarshalBinary(act.Data, &actData)
 		if err != nil {
 			logger.LogError("UnmarshalBinary act err", err)
 			continue
 		}
 
-		onTokenReturnSideChain(block, &actData)
+		onTokenReturnSideChain(block, idx, &actData)
 	}
 }
 
-func onTokenReturnSideChain(block *chainhandler.Block, act *Destroy) {
+func onTokenReturnSideChain(block *chainhandler.Block, idx int, act *Destroy) {
 	logger.Debugf("on return in block %d : %s %v by %v in %s",
 		block.GetNum(), act.Chain, act.From, act.Quantity, act.Memo)
 
-	num = num + 1
 	for _, w := range cfg.GetWatchers() {
-		commitOutAction(w, act)
+		err := commitOutAction(w, block.Num, idx, act)
+		if err != nil {
+			logger.Logger().Error("commit out action err", zap.Error(err))
+		}
 	}
 }
 
 // OutAction  capi_name committer, uint64_t num, capi_name to, name chain, name contract, const asset& quantity, const std::string& memo
 type OutAction struct {
-	Committer eos.Name  `json:"committer"`
-	Num       uint64    `json:"num"`
-	To        eos.Name  `json:"to"`
-	Chain     eos.Name  `json:"chain"`
-	Contract  eos.Name  `json:"contract"`
-	Quantity  eos.Asset `json:"quantity"`
-	Memo      string    `json:"memo"`
+	Committer interface{} `json:"committer"`
+	Num       uint64      `json:"num"`
+	To        interface{} `json:"to"`
+	Chain     interface{} `json:"chain"`
+	Contract  interface{} `json:"contract"`
+	Action    interface{} `json:"action"`
+	Quantity  interface{} `json:"quantity"`
+	Memo      string      `json:"memo"`
 }
 
-// TODO
-var num uint64
+// just use a large num
+const maxActionInBlock = 100000
 
-func commitOutAction(committer cfg.Relayer, act *Destroy) error {
+func commitOutAction(committer cfg.Relayer, blockNum uint32, idx int, act *Destroy) error {
+	mapTokenStat, err := chaindata.GetTokenMapData(string(act.Chain), act.Quantity.Symbol.Symbol, side.Client())
+	if err != nil {
+		return err
+	}
+
+	logger.Debugf("per %v", committer.SideAccount)
+
 	actToCommit := &types.Action{
 		Account: cfg.GetRelayCfg().RelayContract,
 		Name:    "out",
@@ -69,19 +81,26 @@ func commitOutAction(committer cfg.Relayer, act *Destroy) error {
 			committer.SideAccount,
 		},
 		Data: OutAction{
-			Committer: eos.Name(committer.RelayAccount.Actor),
-			Num:       num,
-			To:        eos.Name(act.From),
-			Chain:     act.Chain,
-			Contract:  eos.Name("force.token"),
-			Quantity:  act.Quantity,
-			Memo:      act.Memo,
+			Committer: client.Name(string(committer.RelayAccount.Actor)),
+			Num:       uint64(blockNum)*maxActionInBlock + uint64(idx),
+			To:        client.Name(string(act.From)),
+			Chain:     client.Name(string(act.Chain)),
+			Contract:  client.Name(string(mapTokenStat.SideAccount)),
+			Action:    client.Name(string(mapTokenStat.SideAction)),
+			Quantity: client.Asset(&types.Asset{
+				Amount: int64(act.Quantity.Amount),
+				Symbol: types.Symbol{
+					Precision: act.Quantity.Precision,
+					Symbol:    act.Quantity.Symbol.Symbol,
+				},
+			}),
+			Memo: act.Memo,
 		},
 	}
 
-	_, err := client.PushActions(actToCommit)
+	_, err = client.PushActions(actToCommit)
 	if err != nil {
-		fmt.Println("push action error  ", err.Error())
+		logger.Logger().Error("push action error", zap.Error(err))
 	}
 
 	return err

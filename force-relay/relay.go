@@ -24,8 +24,10 @@ func startRelayService() {
 		panic(errors.New("get info err"))
 	}
 
+	logger.Debugf("get info %v", *info)
+
 	p2pPeers := p2p.NewP2PClient(chainTyp, p2p.P2PInitParams{
-		Name:       "testNode",
+		Name:       "watcher",
 		ClientID:   info.ChainID.String(),
 		StartBlock: nil,
 		Peers:      p2ps,
