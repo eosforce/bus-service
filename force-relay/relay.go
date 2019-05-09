@@ -27,11 +27,11 @@ func startRelayService() {
 	logger.Debugf("get info %v", *info)
 
 	p2pPeers := p2p.NewP2PClient(chainTyp, p2p.P2PInitParams{
-		Name:       "watcher",
-		ClientID:   info.ChainID.String(),
-		StartBlock: nil,
-		Peers:      p2ps,
-		Logger:     logger.Logger(),
+		Name:          "watcher",
+		ClientID:      info.ChainID.String(),
+		StartBlockNum: 0,
+		Peers:         p2ps,
+		Logger:        logger.Logger(),
 	})
 
 	p2pPeers.RegHandler(&handlerImp{

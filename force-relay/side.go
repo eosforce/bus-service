@@ -39,19 +39,12 @@ func startSideService() {
 		lastNum -= 2
 	}
 
-	var syncData *p2p.P2PSyncData
-	if lastNum > 0 {
-		syncData = &p2p.P2PSyncData{
-			HeadBlockNum: lastNum,
-		}
-	}
-
 	p2pPeers := p2p.NewP2PClient(chainTyp, p2p.P2PInitParams{
-		Name:       "relay",
-		ClientID:   info.ChainID.String(),
-		StartBlock: syncData,
-		Peers:      p2ps,
-		Logger:     logger.Logger(),
+		Name:          "relay",
+		ClientID:      info.ChainID.String(),
+		StartBlockNum: lastNum,
+		Peers:         p2ps,
+		Logger:        logger.Logger(),
 	})
 
 	p2pPeers.RegHandler(&handlerImp{
