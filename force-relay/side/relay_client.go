@@ -57,8 +57,6 @@ func GetLastCommittedBlock() (*BlockToForceio, error) {
 		return nil, types.ErrNoSupportChain
 	}
 
-	logger.Debugf("get last cm block %s", cfg.GetRelayCfg().Chain)
-
 	res, err := forceioClient.GetTableRows(req)
 	if err != nil {
 		return nil, errors.Wrapf(err, "get table")
@@ -73,6 +71,8 @@ func GetLastCommittedBlock() (*BlockToForceio, error) {
 	if len(rspBlock) == 0 {
 		return nil, errors.New("rsp block info no find")
 	}
+
+	logger.Debugf("get last cm block %s from %d", cfg.GetRelayCfg().Chain, rspBlock[0].Last.Num)
 
 	return &rspBlock[0].Last, nil
 }

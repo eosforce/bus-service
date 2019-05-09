@@ -40,21 +40,9 @@ func startSideService() {
 	}
 
 	var syncData *p2p.P2PSyncData
-	if false {
-		lastBlockData, err := relay.Client().GetBlockDataByNum(lastNum)
-		if err != nil {
-			panic(errors.Errorf("get block num %d err by %s", lastNum, err.Error()))
-		}
-		lastIrBlockData, err := relay.Client().GetBlockDataByNum(lastNum - 30)
-		if err != nil {
-			panic(errors.Errorf("get block num %d err by %s", lastNum-30, err.Error()))
-		}
+	if lastNum > 0 {
 		syncData = &p2p.P2PSyncData{
-			HeadBlockNum:             lastBlockData.BlockNum,
-			HeadBlockID:              lastBlockData.ID,
-			HeadBlockTime:            lastBlockData.Timestamp,
-			LastIrreversibleBlockNum: lastIrBlockData.BlockNum,
-			LastIrreversibleBlockID:  lastIrBlockData.ID,
+			HeadBlockNum: lastNum,
 		}
 	}
 
@@ -67,7 +55,7 @@ func startSideService() {
 	})
 
 	p2pPeers.RegHandler(&handlerImp{
-		verifier: blockdb.NewFastBlockVerifier(p2ps, 0, chainhandler.NewChainHandler(
+		verifier: blockdb.NewFastBlockVerifier(p2ps, lastNum, chainhandler.NewChainHandler(
 			func(block *chainhandler.Block, actions []chainhandler.Action) {
 				side.HandSideBlock(block, actions)
 			}, chainTyp)),
