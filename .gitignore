@@ -8,3 +8,5 @@ force-relay/\.idea/
 *.log
 
 force-relay/config\.transfer\.json
+
+force-relay/config\.treosforce\.json
