@@ -32,7 +32,7 @@ type commitWorkers struct {
 	cws []*commitWorker
 }
 
-func newCommitWorkers(clientCfg *config.ConfigData, committers []cfg.Relayer) *commitWorkers {
+func newCommitWorkers(clientCfg *config.ConfigData, committers []cfg.Relayer, sideChainType types.ClientType) *commitWorkers {
 	res := &commitWorkers{
 		cws: make([]*commitWorker, 0, len(committers)),
 	}
@@ -40,7 +40,7 @@ func newCommitWorkers(clientCfg *config.ConfigData, committers []cfg.Relayer) *c
 		cw := &commitWorker{
 			committer: c.RelayAccount,
 		}
-		cw.Start(clientCfg)
+		cw.Start(clientCfg, sideChainType)
 		res.cws = append(res.cws, cw)
 	}
 
@@ -49,8 +49,8 @@ func newCommitWorkers(clientCfg *config.ConfigData, committers []cfg.Relayer) *c
 
 var commitWorkerMng *commitWorkers
 
-func InitCommitWorker(clientCfg *config.ConfigData, committers []cfg.Relayer) {
-	commitWorkerMng = newCommitWorkers(clientCfg, committers)
+func InitCommitWorker(clientCfg *config.ConfigData, committers []cfg.Relayer, sideChainType types.ClientType) {
+	commitWorkerMng = newCommitWorkers(clientCfg, committers, sideChainType)
 }
 
 func (c *commitWorkers) OnBlock(block *chainhandler.Block, actions []chainhandler.Action) {
@@ -59,7 +59,7 @@ func (c *commitWorkers) OnBlock(block *chainhandler.Block, actions []chainhandle
 	}
 }
 
-func (c *commitWorker) Start(cfg *config.ConfigData) {
+func (c *commitWorker) Start(cfg *config.ConfigData, sideChainType types.ClientType) {
 	c.works = make(chan commitParam, 4096)
 
 	for {
@@ -70,7 +70,7 @@ func (c *commitWorker) Start(cfg *config.ConfigData) {
 		} else {
 			c.client = client
 
-			c.ActionToRelay, err = GetRelayActions()
+			c.ActionToRelay, err = GetRelayActions(sideChainType)
 			if err != nil {
 				logger.LogError("get actions to relay err ", err)
 				time.Sleep(1 * time.Second)
@@ -104,7 +104,7 @@ func (c *commitWorker) OnBlock(block *chainhandler.Block, actions []chainhandler
 func (c *commitWorker) Loop() {
 	ticker := time.NewTicker(timeBetweenTrx * time.Second)
 	defer ticker.Stop()
-	works2do := make([]commitParam, 0, 4096)[:]
+	works2do := make([]commitParam, 0, 4096)
 	for {
 		select {
 		case w := <-c.works:
@@ -160,7 +160,7 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 			c.processCommitErr(err)
 		} else {
 			err = c.waitCommitComplate(cps, pushRes)
-			if err != nil {
+			if err == nil {
 				break
 			}
 		}

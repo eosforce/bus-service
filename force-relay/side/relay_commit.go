@@ -56,7 +56,7 @@ func (c *commitParam) FromGeneral(acts *ActionsToRelay, sw types.SwitcherInterfa
 	c.Block.FromGeneral(sw, block)
 	c.Actions = make([]ActionToCommit, 0, len(actions))
 	for _, act := range actions {
-		if !acts.IsNeedCommit(act.Account, act.Name) {
+		if !acts.IsNeedCommit(act.Account, act.Name, act.Data) {
 			continue
 		}
 

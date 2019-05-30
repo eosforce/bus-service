@@ -19,7 +19,7 @@ func startSideService() {
 	data, p2ps := cfg.GetChainCfg("side")
 	chainTyp := cfg.GetChainTyp("side")
 
-	side.InitCommitWorker(chainCfgs, cfg.GetTransfers())
+	side.InitCommitWorker(chainCfgs, cfg.GetTransfers(), chainTyp)
 
 	// for p2p chain id
 	info, err := relay.Client().GetInfoData()

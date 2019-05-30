@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/cihub/seelog"
+	"github.com/fanyang1988/force-go/types"
 )
 
 func initCfgForTest() {
@@ -31,7 +32,7 @@ func TestGetActionsToRelay(t *testing.T) {
 	defer seelog.Flush()
 	initCfgForTest()
 
-	rsp, err := GetRelayActions()
+	rsp, err := GetRelayActions(types.EOSForce)
 	if err != nil {
 		t.Errorf("err by %v", err.Error())
 		t.FailNow()

@@ -1,6 +1,7 @@
 package side
 
 import (
+	"strings"
 	"time"
 
 	force "github.com/fanyang1988/force-go"
@@ -77,61 +78,6 @@ func GetLastCommittedBlock() (*BlockToForceio, error) {
 	return &rspBlock[0].Last, nil
 }
 
-// ActionsToRelay actions need to relay
-type ActionsToRelay struct {
-	names     map[string]int
-	Contracts []string
-	Actions   []string
-	keys      map[string]bool
-}
-
-func NewActionsToRelay() *ActionsToRelay {
-	return &ActionsToRelay{
-		names:     make(map[string]int),
-		Contracts: make([]string, 0, 8),
-		Actions:   make([]string, 0, 8),
-		keys:      make(map[string]bool),
-	}
-}
-
-func (a *ActionsToRelay) Append(name, actContract, actName string) {
-	_, ok := a.names[name]
-	if ok {
-		return
-	}
-	a.names[name] = len(a.Contracts)
-	a.Contracts = append(a.Contracts, actContract)
-	a.Actions = append(a.Actions, actName)
-
-	a.keys[actContract+"::"+actName] = true
-}
-
-func (a *ActionsToRelay) IsNeedCommit(contract, name string) bool {
-	_, ok := a.keys[contract+"::"+name]
-	return ok
-}
-
-/*
-  "rows": [{
-      "chain": "eosforce",
-      "name": "eosforce.ct",
-      "actaccount": "eosio",
-      "actname": "transfer",
-      "relayacc": "rs",
-      "account": "relay.token",
-      "data": ""
-    },{
-      "chain": "eosforce",
-      "name": "eosforce.t",
-      "actaccount": "eosio.token",
-      "actname": "transfer",
-      "relayacc": "rs",
-      "account": "relay.token",
-      "data": ""
-    }
-  ],
-*/
-
 type handlersInfo struct {
 	Chain             eos.Name `json:"chain"`
 	Name              eos.Name `json:"name"`
@@ -142,8 +88,58 @@ type handlersInfo struct {
 	Data              string   `json:"data"`
 }
 
+// ActionsToRelay actions need to relay
+type ActionsToRelay struct {
+	names     map[string]int
+	Contracts []string
+	Actions   []string
+	keys      map[string]handlersInfo
+	switcher  types.SwitcherInterface
+}
+
+func NewActionsToRelay(chainType types.ClientType) *ActionsToRelay {
+	return &ActionsToRelay{
+		names:     make(map[string]int),
+		Contracts: make([]string, 0, 8),
+		Actions:   make([]string, 0, 8),
+		keys:      make(map[string]handlersInfo),
+		switcher:  types.NewSwitcherInterface(chainType),
+	}
+}
+
+func (a *ActionsToRelay) Append(name, actContract, actName string, data handlersInfo) {
+	_, ok := a.names[name]
+	if ok {
+		return
+	}
+	a.names[name] = len(a.Contracts)
+	a.Contracts = append(a.Contracts, actContract)
+	a.Actions = append(a.Actions, actName)
+
+	a.keys[actContract+"::"+actName] = data
+}
+
+func (a *ActionsToRelay) IsNeedCommit(contract, name string, data []byte) bool {
+	handlerData, ok := a.keys[contract+"::"+name]
+
+	if !ok {
+		return false
+	}
+
+	if strings.Contains(string(handlerData.RelayContractName), "token") {
+		transferData, err := a.switcher.UnpackTransferAction(data)
+		if err != nil {
+			return false
+		}
+
+		return transferData.To == string(handlerData.SideRelayName)
+	}
+
+	return ok
+}
+
 // GetRelayActions get actions need to relay
-func GetRelayActions() (*ActionsToRelay, error) {
+func GetRelayActions(chainTyp types.ClientType) (*ActionsToRelay, error) {
 	req := eos.GetTableRowsRequest{
 		Code:  "force.relay",
 		Scope: cfg.GetRelayCfg().Chain,
@@ -174,10 +170,10 @@ func GetRelayActions() (*ActionsToRelay, error) {
 	logger.Debugf("get handlers %s from %v", cfg.GetRelayCfg().Chain, rspHandlers)
 
 	// TODO Handler add by nodes
-	res := NewActionsToRelay()
+	res := NewActionsToRelay(chainTyp)
 	for _, h := range rspHandlers {
 		logger.Debugf("handler %s from %s:%s", h.Name, h.ActionContract, h.ActionName)
-		res.Append(string(h.Name), string(h.ActionContract), string(h.ActionName))
+		res.Append(string(h.Name), string(h.ActionContract), string(h.ActionName), h)
 	}
 
 	return res, nil
