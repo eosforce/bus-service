@@ -3,9 +3,9 @@ package chainhandler
 import (
 	"sync"
 
-	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/fanyang1988/force-go/types"
-	"go.uber.org/zap"
+
+	"github.com/eosforce/bus-service/force-relay/logger"
 )
 
 type HandlerFunc func(block *Block, actions []Action)
@@ -42,9 +42,9 @@ func NewChainHandler(h HandlerFunc, chainTyp types.ClientType) *ChainHandler {
 }
 
 func (c *ChainHandler) OnBlock(block *types.BlockGeneralInfo) error {
-	logger.Logger().Debug("on block",
-		zap.Uint32("num", block.BlockNum),
-		zap.String("id", block.ID.String()))
+	//logger.Logger().Debug("on block",
+	//	zap.Uint32("num", block.BlockNum),
+	//	zap.String("id", block.ID.String()))
 	var bqi blockQueueItem
 	bqi.block = Block{
 		Producer:         block.Producer,
