@@ -7,7 +7,7 @@ import (
 )
 
 func initCfgForTest() {
-	CreateClient("../config.json")
+	CreateClient("../config.treosforce.json")
 	SetCfg(NewCfg("eosforce", "eosforce"))
 }
 
@@ -25,4 +25,17 @@ func TestGetLastCommittedBlock(t *testing.T) {
 	t.Logf("rsp info %v", rsp.ID)
 	t.Logf("rsp info %v", rsp.Num)
 	t.Logf("rsp info %v", rsp.Producer)
+}
+
+func TestGetActionsToRelay(t *testing.T) {
+	defer seelog.Flush()
+	initCfgForTest()
+
+	rsp, err := GetRelayActions()
+	if err != nil {
+		t.Errorf("err by %v", err.Error())
+		t.FailNow()
+	}
+
+	t.Logf("rsp info %v", *rsp)
 }

@@ -1,21 +1,22 @@
 package main
 
 import (
+	"github.com/fanyang1988/force-block-ev/blockdb"
+	"github.com/fanyang1988/force-go/p2p"
+	"github.com/pkg/errors"
+
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
 	"github.com/eosforce/bus-service/force-relay/relay"
 	"github.com/eosforce/bus-service/force-relay/side"
-	"github.com/fanyang1988/force-block-ev/blockdb"
-	"github.com/fanyang1988/force-go/p2p"
-	"github.com/pkg/errors"
 )
 
 func startSideService() {
 	// frome side need to commit block to relay
 	chainCfgs, _ := cfg.GetChainCfg("relay")
 
-	_, p2ps := cfg.GetChainCfg("side")
+	data, p2ps := cfg.GetChainCfg("side")
 	chainTyp := cfg.GetChainTyp("side")
 
 	side.InitCommitWorker(chainCfgs, cfg.GetTransfers())
@@ -32,11 +33,15 @@ func startSideService() {
 		panic(errors.New("GetLastCommittedBlock info err"))
 	}
 
-	logger.Debugf("get last committed block %v", lastCommitted)
+	logger.Debugf("get last committed block %v %d", lastCommitted, data.StartNum)
 
 	lastNum := lastCommitted.Num
 	if lastNum > 3 {
 		lastNum -= 2
+	}
+
+	if lastNum == 0 {
+		lastNum = data.StartNum
 	}
 
 	p2pPeers := p2p.NewP2PClient(chainTyp, p2p.P2PInitParams{

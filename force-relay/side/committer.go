@@ -4,12 +4,13 @@ import (
 	"strings"
 	"time"
 
+	force "github.com/fanyang1988/force-go"
+	"github.com/fanyang1988/force-go/config"
+	"github.com/fanyang1988/force-go/types"
+
 	"github.com/eosforce/bus-service/force-relay/cfg"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
-	"github.com/fanyang1988/force-go"
-	"github.com/fanyang1988/force-go/config"
-	"github.com/fanyang1988/force-go/types"
 )
 
 const (
@@ -21,9 +22,10 @@ const (
 )
 
 type commitWorker struct {
-	committer types.PermissionLevel
-	works     chan commitParam
-	client    types.ClientInterface
+	committer     types.PermissionLevel
+	works         chan commitParam
+	client        types.ClientInterface
+	ActionToRelay *ActionsToRelay
 }
 
 type commitWorkers struct {
@@ -59,6 +61,7 @@ func (c *commitWorkers) OnBlock(block *chainhandler.Block, actions []chainhandle
 
 func (c *commitWorker) Start(cfg *config.ConfigData) {
 	c.works = make(chan commitParam, 4096)
+
 	for {
 		client, err := force.NewClient(types.FORCEIO, cfg)
 		if err != nil {
@@ -66,9 +69,18 @@ func (c *commitWorker) Start(cfg *config.ConfigData) {
 			time.Sleep(1 * time.Second)
 		} else {
 			c.client = client
-			break
+
+			c.ActionToRelay, err = GetRelayActions()
+			if err != nil {
+				logger.LogError("get actions to relay err ", err)
+				time.Sleep(1 * time.Second)
+			} else {
+				break
+			}
 		}
 	}
+
+	logger.Infof("start worker loop")
 
 	go func(cc *commitWorker) {
 		cc.Loop()
@@ -80,8 +92,13 @@ func (c *commitWorker) OnBlock(block *chainhandler.Block, actions []chainhandler
 		Name:     c.client.Name(cfg.GetRelayCfg().Chain),
 		Transfer: c.client.Name(c.committer.Actor),
 	}
-	cc.FromGeneral(types.NewSwitcherInterface(types.FORCEIO), block, actions)
-	c.works <- cc
+	cc.FromGeneral(c.ActionToRelay,
+		types.NewSwitcherInterface(types.FORCEIO),
+		block, actions)
+
+	if cc.IsNeedCommit() {
+		c.works <- cc
+	}
 }
 
 func (c *commitWorker) Loop() {

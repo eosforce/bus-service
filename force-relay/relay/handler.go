@@ -1,15 +1,16 @@
 package relay
 
 import (
-	"github.com/eosforce/bus-service/force-relay/chaindata"
-	"github.com/eosforce/bus-service/force-relay/side"
+	"fmt"
 
 	"github.com/fanyang1988/force-go/types"
 	"go.uber.org/zap"
 
 	"github.com/eosforce/bus-service/force-relay/cfg"
+	"github.com/eosforce/bus-service/force-relay/chaindata"
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	"github.com/eosforce/bus-service/force-relay/logger"
+	"github.com/eosforce/bus-service/force-relay/side"
 	forceio "github.com/eosforce/goforceio"
 )
 
@@ -22,7 +23,9 @@ type Destroy struct {
 }
 
 func HandRelayBlock(block *chainhandler.Block, actions []chainhandler.Action) {
-	logger.Debugf("on block from relay %d", block.GetNum())
+	if block.GetNum()%1000 == 0 {
+		logger.Debugf("on block from relay %d", block.GetNum())
+	}
 	for idx, act := range actions {
 		if act.Account != "relay.token" || act.Name != "destroy" {
 			continue
@@ -72,8 +75,6 @@ func commitOutAction(committer cfg.Relayer, blockNum uint32, idx int, act *Destr
 		return err
 	}
 
-	logger.Debugf("per %v", committer.SideAccount)
-
 	actToCommit := &types.Action{
 		Account: cfg.GetRelayCfg().RelayContract,
 		Name:    "out",
@@ -83,7 +84,7 @@ func commitOutAction(committer cfg.Relayer, blockNum uint32, idx int, act *Destr
 		Data: OutAction{
 			Committer: client.Name(string(committer.RelayAccount.Actor)),
 			Num:       uint64(blockNum)*maxActionInBlock + uint64(idx),
-			To:        client.Name(string(act.From)),
+			To:        client.Name(string(act.Memo)),
 			Chain:     client.Name(string(act.Chain)),
 			Contract:  client.Name(string(mapTokenStat.SideAccount)),
 			Action:    client.Name(string(mapTokenStat.SideAction)),
@@ -94,7 +95,8 @@ func commitOutAction(committer cfg.Relayer, blockNum uint32, idx int, act *Destr
 					Symbol:    act.Quantity.Symbol.Symbol,
 				},
 			}),
-			Memo: act.Memo,
+			Memo: fmt.Sprintf("from codex %s to %s in %s block %d",
+				string(act.From), act.Memo, string(act.Chain), blockNum),
 		},
 	}
 

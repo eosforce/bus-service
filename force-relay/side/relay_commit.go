@@ -1,9 +1,10 @@
 package side
 
 import (
+	"github.com/fanyang1988/force-go/types"
+
 	"github.com/eosforce/bus-service/force-relay/chainhandler"
 	forceio "github.com/eosforce/goforceio"
-	"github.com/fanyang1988/force-go/types"
 )
 
 type BlockToForceio struct {
@@ -47,10 +48,18 @@ type commitParam struct {
 	Actions  []ActionToCommit `json:"actions"`
 }
 
-func (c *commitParam) FromGeneral(sw types.SwitcherInterface, block *chainhandler.Block, actions []chainhandler.Action) {
+func (c *commitParam) IsNeedCommit() bool {
+	return len(c.Actions) > 0
+}
+
+func (c *commitParam) FromGeneral(acts *ActionsToRelay, sw types.SwitcherInterface, block *chainhandler.Block, actions []chainhandler.Action) {
 	c.Block.FromGeneral(sw, block)
 	c.Actions = make([]ActionToCommit, 0, len(actions))
 	for _, act := range actions {
+		if !acts.IsNeedCommit(act.Account, act.Name) {
+			continue
+		}
+
 		act2Commit := ActionToCommit{
 			Account:       sw.NameFromCommon(act.Account),
 			Name:          sw.NameFromCommon(act.Name),
