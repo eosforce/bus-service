@@ -10,3 +10,5 @@ force-relay/\.idea/
 force-relay/config\.transfer\.json
 
 force-relay/config\.treosforce\.json
+
+*.json
