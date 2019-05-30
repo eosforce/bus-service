@@ -173,6 +173,7 @@ func GetRelayActions() (*ActionsToRelay, error) {
 
 	logger.Debugf("get handlers %s from %v", cfg.GetRelayCfg().Chain, rspHandlers)
 
+	// TODO Handler add by nodes
 	res := NewActionsToRelay()
 	for _, h := range rspHandlers {
 		logger.Debugf("handler %s from %s:%s", h.Name, h.ActionContract, h.ActionName)

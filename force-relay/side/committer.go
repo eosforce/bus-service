@@ -153,22 +153,37 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 		if i > 1 {
 			time.Sleep(10 * time.Millisecond)
 		}
-		_, err := c.client.PushActions(actions...)
+
+		pushRes, err := c.client.PushActions(actions...)
 
 		if err != nil {
-			logger.LogError("commit action err", err)
-			if strings.Contains(err.Error(), "Transaction took too long") {
-				logger.Warnf("need wait chain err by took too long")
-				time.Sleep(8 * time.Second)
-			}
-
-			if strings.Contains(err.Error(), "RAM") {
-				logger.Warnf("need wait other chain err by RAM")
-				time.Sleep(8 * time.Second)
-			}
+			c.processCommitErr(err)
 		} else {
-			break
+			err = c.waitCommitComplate(cps, pushRes)
+			if err != nil {
+				break
+			}
 		}
 	}
+}
 
+func (c *commitWorker) processCommitErr(err error) {
+	logger.LogError("commit action err", err)
+	if strings.Contains(err.Error(), "Transaction took too long") {
+		logger.Warnf("need wait chain err by took too long")
+		time.Sleep(4 * time.Second)
+	}
+
+	if strings.Contains(err.Error(), "RAM") {
+		logger.Warnf("need wait other chain err by RAM")
+		time.Sleep(4 * time.Second)
+	}
+}
+
+func (c *commitWorker) waitCommitComplate(cps []commitParam, pushRes *types.PushTransactionFullResp) error {
+	logger.Infof("commit to relay %s %d %s, trx id %s",
+		pushRes.StatusCode, pushRes.BlockNum, pushRes.BlockID,
+		pushRes.TransactionID)
+
+	return nil
 }
