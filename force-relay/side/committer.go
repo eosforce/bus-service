@@ -133,7 +133,7 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 
 	for _, cp := range cps {
 		actions = append(actions, &types.Action{
-			Account: "force.relay",
+			Account: "codex.relay",
 			Name:    "commit",
 			Authorization: []types.PermissionLevel{
 				c.committer,

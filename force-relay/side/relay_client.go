@@ -48,7 +48,7 @@ type lastCommitBlockInfo struct {
 // GetLastCommittedBlock get last committed block to relay chain
 func GetLastCommittedBlock() (*BlockToForceio, error) {
 	req := eos.GetTableRowsRequest{
-		Code:  "force.relay",
+		Code:  "codex.relay",
 		Scope: cfg.GetRelayCfg().Chain,
 		Table: "relaystat",
 	}
@@ -141,7 +141,7 @@ func (a *ActionsToRelay) IsNeedCommit(contract, name string, data []byte) bool {
 // GetRelayActions get actions need to relay
 func GetRelayActions(chainTyp types.ClientType) (*ActionsToRelay, error) {
 	req := eos.GetTableRowsRequest{
-		Code:  "force.relay",
+		Code:  "codex.relay",
 		Scope: cfg.GetRelayCfg().Chain,
 		Table: "handlers",
 	}
