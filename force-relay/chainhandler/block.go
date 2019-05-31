@@ -14,7 +14,6 @@ type Block struct {
 	Confirmed        uint16            `json:"confirmed"`
 	TransactionMRoot types.Checksum256 `json:"transaction_mroot"`
 	ActionMRoot      types.Checksum256 `json:"action_mroot"`
-	MRoot            types.Checksum256 `json:"mroot"`
 }
 
 func (b *Block) GetNum() uint32 {

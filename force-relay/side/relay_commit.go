@@ -15,7 +15,6 @@ type BlockToForceio struct {
 	Confirmed        uint16              `json:"confirmed"`
 	TransactionMRoot forceio.Checksum256 `json:"transaction_mroot"`
 	ActionMRoot      forceio.Checksum256 `json:"action_mroot"`
-	MRoot            forceio.Checksum256 `json:"mroot"`
 }
 
 func (b *BlockToForceio) FromGeneral(sw types.SwitcherInterface, bk *chainhandler.Block) {
@@ -26,7 +25,6 @@ func (b *BlockToForceio) FromGeneral(sw types.SwitcherInterface, bk *chainhandle
 	b.Previous = forceio.Checksum256(bk.Previous)
 	b.TransactionMRoot = forceio.Checksum256(bk.TransactionMRoot)
 	b.ActionMRoot = forceio.Checksum256(bk.ActionMRoot)
-	b.MRoot = forceio.Checksum256(bk.MRoot)
 }
 
 type ActionToCommit struct {

@@ -149,9 +149,10 @@ func (c *commitWorker) CommitTrx(cps []commitParam) {
 		logger.Debugf("commit %d by %v", cps[idx].Block.Num, act.Data)
 	}
 
-	for i := 0; i < retryTimes; i++ {
+	for i := 0; ; i++ {
 		if i > 1 {
 			time.Sleep(10 * time.Millisecond)
+			logger.Warnf("commit err re commit times %d", i)
 		}
 
 		pushRes, err := c.client.PushActions(actions...)
@@ -171,12 +172,12 @@ func (c *commitWorker) processCommitErr(err error) {
 	logger.LogError("commit action err", err)
 	if strings.Contains(err.Error(), "Transaction took too long") {
 		logger.Warnf("need wait chain err by took too long")
-		time.Sleep(4 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 
 	if strings.Contains(err.Error(), "RAM") {
 		logger.Warnf("need wait other chain err by RAM")
-		time.Sleep(4 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 
